@@ -28,7 +28,7 @@ void stop_sparki();
 
 // Setup the robot
 void setup()
-{
+{ 
   // Called on powerup
   sparki.RGB(RGB_RED); // Turn on the red LED
   sparki.servo(SERVO_CENTER); // Center the ultrasonic sensor
@@ -56,17 +56,17 @@ void loop() {
   sparki.clearLCD();
   sparki.print("STATE: ");
   sparki.println(current_state);
-
+  
   switch (current_state)
   {
     case ROTATE:
       rotate();
       break;
-
+    
     case DRIVE_OBJ:
       drive_obj();
       break;
-
+    
     case GRAB:
       grab();
       break;
@@ -78,12 +78,12 @@ void loop() {
       // Drive until you detect a line
       drive_line();
       break;
-
+    
     case FOLLOW_LINE:
       // follow the detected line
       follow_line();
       break;
-
+    
     case STOP:
       // Finished, stop the robot
       stop_sparki();
@@ -95,16 +95,16 @@ void loop() {
   delay(100); // Only run controller at 10Hz
 }
 
-void rotate()
+void rotate() 
 {
   // Test transition "detectObj <= 30cm"
   // if object detected within 30 cm
-  if (sonic_distance != -1 && sonic_distance <= 30)
+  if (sonic_distance != -1 && sonic_distance <= 30) 
   {
     // if true, set state to "object found"
     current_state = DRIVE_OBJ;
   }
-  else
+  else 
   {
     // rotate 5 degrees
     sparki.moveLeft(5);
@@ -117,7 +117,7 @@ void drive_obj()
 {
   // If the object is within 7 cm
     // change state to grab
-
+    
     // else, drive one more cm
   return;
 }
@@ -128,7 +128,7 @@ void grab() //Coop
   sparki.moveForward(2);
   // Perform grab motion
   sparki.gripperClose();
-
+  
   return;
 }
 
@@ -136,16 +136,17 @@ void grab() //Coop
 void turn_around()
 {
   sparki.moveLeft(180);
-  current_state = DRIVE_LINE
+  current_state = DRIVE_LINE;
 }
 
 // Drive until the line is detected
 void drive_line()
 {
   // Check if the line is detected
-  if (line_left >= threshold || line_right >= threshold || line_center >= threshold) {
+  if (line_left >= threshold || line_right >= threshold || line_center >= threshold) 
+  {
     // Change state to FOLLOW_LINE
-    current_state = FOLLOW_LINE
+    current_state = FOLLOW_LINE;
   }
   else
   {
@@ -163,7 +164,7 @@ void follow_line()
     current_state = STOP;
     return;
   }
-
+    
     //else, stear the robot:
         // If the center detecter is strongest, go strait
         // else if the left sensor is the strongest, turn left
