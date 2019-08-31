@@ -89,11 +89,12 @@ void loop() {
       stop_sparki();
       break;
 
-    case default:
+    default:
       //Finshed all tasks
       sparki.RGB(RGB_BLUE);
       delay(500);
       sparki.RGB(RGB_OFF);
+      break;
   }
   // Your state machine code goes here
 
@@ -109,12 +110,12 @@ void rotate()
   {
     // if true, set state to "object found"
     current_state = DRIVE_OBJ;
-    sparki.moveLeft(1); //Rotate a little further to get full frame of obj
+    sparki.moveLeft(10); //Rotate a little further to get full frame of obj
   }
   else
   {
     // rotate 5 degrees
-    sparki.moveLeft(5);
+    sparki.moveLeft(1);
   }
   return;
 }
@@ -126,7 +127,6 @@ void drive_obj()
     // change state to grab
   if(sonic_distance != -1 && sonic_distance <= 7)
     current_state = GRAB;
-
   else
     sparki.moveForward(2);
     // else, drive one more cm
@@ -142,7 +142,8 @@ void grab()
 
   //NOTE: Not dealing with possibility of grab failure here
 
-  current_state = turn_around();
+  // Robot is turning arround while it grabs... We need to time wait while grabbing to fix this
+  current_state = TURN_AROUND;
 
   return;
 }
