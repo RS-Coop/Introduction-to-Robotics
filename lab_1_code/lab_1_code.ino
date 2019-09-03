@@ -192,7 +192,7 @@ void orient_towards_line()
 void follow_line()
 {
   // If all line detectos read high line readings, stop (you have reached the finish)
-  if((edge_left > threshold) && (edge_right > threshold) && (line_center > threshold) && (edge_left > threshold) && (edge_right > threshold))
+  if((edge_left < threshold) && (edge_right < threshold) && (line_center < threshold) && (edge_left < threshold) && (edge_right < threshold))
   {
     current_state = STOP;
     return;
@@ -202,12 +202,12 @@ void follow_line()
     // If the center detecter is strongest, go strait
     sparki.moveForward(1);
   }
-  else if(line_left < threshold)
+  else if(line_left < threshold && line_left < line_right)
   {
     // else if the left sensor is the strongest, turn left
     sparki.moveLeft(1);
   }
-  else if(line_right < threshold)
+  else
   {
     // else if the right sensor is strongest, turn right
     sparki.moveRight(1);
