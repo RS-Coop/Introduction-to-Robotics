@@ -106,7 +106,7 @@ void loop() {
   delay(100); // Only run controller at 10Hz
 }
 
-void rotate()
+void detect_obj()
 {
   // Test transition "detectObj <= 30cm"
   // if object detected within 30 cm
@@ -164,7 +164,7 @@ void turn_around()
 }
 
 // Drive until the line is detected
-void drive_line()
+void detect_line()
 {
   // Check if the line is detected
   if (line_left < threshold || line_right < threshold || line_center < threshold)
