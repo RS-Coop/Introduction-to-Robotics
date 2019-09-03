@@ -1,11 +1,11 @@
 #include <Sparki.h>
 
 // State constants
-#define ROTATE 1
+#define DETECT_OBJ 1
 #define DRIVE_OBJ 2
 #define GRAB 3
 #define TURN_AROUND 4
-#define DRIVE_LINE 5
+#define DETECT_LINE 5
 #define ORIENT_TOWARDS_LINE 6
 #define FOLLOW_LINE 7
 #define STOP 8
@@ -20,11 +20,11 @@ int line_right = 1000;
 int edge_left = 1000;
 int edge_right = 1000;
 
-void rotate();
+void detect_obj();
 void drive_obj();
 void grab();
 void turn_around();
-void drive_line();
+void detect_line();
 void orient_towards_line();
 void follow_line();
 void stop_sparki();
@@ -65,7 +65,7 @@ void loop() {
 
   switch (current_state)
   {
-    case ROTATE:
+    case DETECT_OBJ:
       rotate();
       break;
 
@@ -80,7 +80,7 @@ void loop() {
       // turn 180 degrees
       turn_around();
       break;
-    case DRIVE_LINE:
+    case DETECT_LINE:
       // Drive until you detect a line
       drive_line();
       break;
@@ -91,7 +91,6 @@ void loop() {
       // follow the detected line
       follow_line();
       break;
-
     case STOP:
       // Finished, stop the robot
       stop_sparki();
