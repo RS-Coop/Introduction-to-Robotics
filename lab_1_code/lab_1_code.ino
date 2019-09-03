@@ -16,6 +16,8 @@ int sonic_distance = 1000;
 int line_left = 1000;
 int line_center = 1000;
 int line_right = 1000;
+int edge_left = 1000;
+int edge_right = 1000;
 
 void rotate();
 void drive_obj();
@@ -44,6 +46,8 @@ void readSensors() {
   line_left = sparki.lineLeft(); // Read the left IR sensor
   line_right = sparki.lineRight(); // Read the right IR sensor
   line_center = sparki.lineCenter(); // Read the center IR sensor
+  edge_left = sparki.edgeLeft(); // Read the left edge IR sensor
+  edge_right = sparki.edgeRight(); // Read the left right IR sensor
 }
 
 
@@ -139,6 +143,10 @@ void grab()
   sparki.moveForward(2);
   // Perform grab motion
   sparki.gripperClose();
+  
+  // FIX THIS TO BE ASYNCHRONOUS
+  delay(4500);
+  sparki.gripperStop();
 
   //NOTE: Not dealing with possibility of grab failure here
 
@@ -175,27 +183,27 @@ void drive_line()
 void follow_line()
 {
   // If all line detectos read high line readings, stop (you have reached the finish)
-  if((line_left < threshold) && (line_right < threshold) && (line_center < threshold))
-  {
-    current_state = STOP;
-    return;
-  }
+//  if((edge_left > threshold) && (edge_right > threshold) && (line_center > threshold))
+//  {
+//    current_state = STOP;
+//    return;
+//  }
 
     //else, stear the robot:
         // If the center detecter is strongest, go strait
         // else if the left sensor is the strongest, turn left
         // else if the right sensor is strongest, turn right
-  else if(line_center < threshold && line_left >= threshold && line_right >= threshold)
+  /*else*/ if(line_center < threshold && line_left >= threshold && line_right >= threshold)
   {
-    sparki.moveForward(2);
+    sparki.moveForward(1);
   }
   else if(line_left < threshold)
   {
-    sparki.moveRight(1);
+    sparki.moveLeft(1);
   }
   else if(line_right < threshold)
   {
-    sparki.moveLeft(1);
+    sparki.moveRight(1);
   }
 
   return;
