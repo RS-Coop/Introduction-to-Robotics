@@ -6,8 +6,9 @@
 #define GRAB 3
 #define TURN_AROUND 4
 #define DRIVE_LINE 5
-#define FOLLOW_LINE 6
-#define STOP 7
+#define ORIENT_TOWARDS_LINE 6
+#define FOLLOW_LINE 7
+#define STOP 8
 
 // Set up some global variables with default values to be replaced during operation
 int current_state = ROTATE;
@@ -24,6 +25,7 @@ void drive_obj();
 void grab();
 void turn_around();
 void drive_line();
+void orient_towards_line();
 void follow_line();
 void stop_sparki();
 
@@ -82,7 +84,9 @@ void loop() {
       // Drive until you detect a line
       drive_line();
       break;
-
+    case ORIENT_TOWARDS_LINE:
+      orient_towards_line();
+      break;
     case FOLLOW_LINE:
       // follow the detected line
       follow_line();
@@ -170,7 +174,7 @@ void detect_line()
   if (line_left < threshold || line_right < threshold || line_center < threshold)
   {
     // Change state to FOLLOW_LINE
-    current_state = FOLLOW_LINE;
+    current_state = ORIENT_TOWARDS_LINE;
   }
   else
   {
@@ -180,29 +184,33 @@ void detect_line()
   return;
 }
 
+void orient_towards_line()
+{
+  sparki.moveLeft(45);
+  current_state = FOLLOW_LINE;
+}
+
 void follow_line()
 {
   // If all line detectos read high line readings, stop (you have reached the finish)
-//  if((edge_left > threshold) && (edge_right > threshold) && (line_center > threshold))
-//  {
-//    current_state = STOP;
-//    return;
-//  }
-
-    //else, stear the robot:
-        // If the center detecter is strongest, go strait
-        // else if the left sensor is the strongest, turn left
-        // else if the right sensor is strongest, turn right
-  /*else*/ if(line_center < threshold && line_left >= threshold && line_right >= threshold)
+  if((edge_left > threshold) && (edge_right > threshold) && (line_center > threshold) && (edge_left > threshold) && (edge_right > threshold))
   {
+    current_state = STOP;
+    return;
+  }    
+  else if(line_center < threshold && line_left >= threshold && line_right >= threshold)
+  {
+    // If the center detecter is strongest, go strait
     sparki.moveForward(1);
   }
   else if(line_left < threshold)
   {
+    // else if the left sensor is the strongest, turn left
     sparki.moveLeft(1);
   }
   else if(line_right < threshold)
   {
+    // else if the right sensor is strongest, turn right
     sparki.moveRight(1);
   }
 
