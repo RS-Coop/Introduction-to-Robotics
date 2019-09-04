@@ -140,7 +140,7 @@ void drive_obj()
 void grab()
 {
   // Move forward slightly
-  sparki.moveForward(2);
+  sparki.moveForward(22);
   // Perform grab motion
   sparki.gripperClose();
   
