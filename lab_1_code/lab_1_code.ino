@@ -188,11 +188,7 @@ void orient_line()
 void follow_line()
 {
   // If all line detectos read high line readings, stop (you have reached the finish)
-<<<<<<< HEAD
   if(((line_center < threshold) && (line_left < threshold) && (line_right < threshold)))
-=======
-  if((edge_left < threshold) && (edge_right < threshold) && (line_center < threshold) && (edge_left < threshold) && (edge_right < threshold))
->>>>>>> f31d441b0826c3e30b6f17edaeb0161281ada11d
   {
     current_state = STOP;
     return;
