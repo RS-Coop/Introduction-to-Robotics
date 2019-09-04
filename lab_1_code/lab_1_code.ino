@@ -238,6 +238,8 @@ void stop_sparki()
   sparki.beep();
 
   sparki.gripperOpen();
+  delay(6000);
+  sparki.gripperStop();
 
   current_state = 100;
 
