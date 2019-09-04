@@ -76,7 +76,6 @@ void loop() {
       break;
     case TURN_AROUND:
       // turn 180 degrees
-      turn_around();
       break;
     case DETECT_LINE:
       // Drive until you detect a line
@@ -140,27 +139,26 @@ void drive_obj()
 void grab()
 {
   // Move forward slightly
+<<<<<<< HEAD
   sparki.moveForward(22);
+=======
+  sparki.moveForward(3);
+>>>>>>> 8959426989310c7589e75342611291f157768b8f
   // Perform grab motion
   sparki.gripperClose();
   
   // FIX THIS TO BE ASYNCHRONOUS
-  delay(4500);
+  delay(6000);
   sparki.gripperStop();
 
   //NOTE: Not dealing with possibility of grab failure here
 
-  // Robot is turning arround while it grabs... We need to time wait while grabbing to fix this
-  current_state = TURN_AROUND;
-
-  return;
-}
-
+  
 // Turn 180 degrees
-void turn_around()
-{
   sparki.moveLeft(180);
   current_state = DETECT_LINE;
+
+  return;
 }
 
 // Drive until the line is detected
@@ -169,7 +167,7 @@ void detect_line()
   // Check if the line is detected
   if (line_left < threshold || line_right < threshold || line_center < threshold)
   {
-    current_state = FOLLOW_LINE;
+    current_state = ORIENT_LINE;
   }
   else
   {
@@ -181,8 +179,27 @@ void detect_line()
 
 void orient_line()
 {
-  sparki.moveLeft(45);
-  current_state = FOLLOW_LINE;
+  if(((line_center < threshold) && (line_left < threshold) && (line_right < threshold)))
+  {
+    sparki.moveForward(3);
+    sparki.moveLeft(45);
+  }
+  else if(line_center < threshold && line_left >= threshold && line_right >= threshold)
+  {
+    // If the center detecter is strongest, go strait
+    sparki.moveForward(1);
+    current_state = FOLLOW_LINE;
+  }
+  else if(line_left < threshold && line_left < line_right)
+  {
+    // else if the left sensor is the strongest, turn left
+    sparki.moveLeft(1);
+  }
+  else
+  {
+    // else if the right sensor is strongest, turn right
+    sparki.moveRight(1);
+  }
 }
 
 void follow_line()
@@ -219,6 +236,8 @@ void stop_sparki()
   sparki.beep();
 
   sparki.gripperOpen();
+  delay(6000);
+  sparki.gripperStop();
 
   current_state = 100;
 
