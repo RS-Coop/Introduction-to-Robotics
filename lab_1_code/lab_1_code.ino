@@ -139,21 +139,17 @@ void drive_obj()
 void grab()
 {
   // Move forward slightly
-<<<<<<< HEAD
-  sparki.moveForward(22);
-=======
   sparki.moveForward(3);
->>>>>>> 8959426989310c7589e75342611291f157768b8f
   // Perform grab motion
   sparki.gripperClose();
-  
+
   // FIX THIS TO BE ASYNCHRONOUS
   delay(6000);
   sparki.gripperStop();
 
   //NOTE: Not dealing with possibility of grab failure here
 
-  
+
 // Turn 180 degrees
   sparki.moveLeft(180);
   current_state = DETECT_LINE;
@@ -209,7 +205,7 @@ void follow_line()
   {
     current_state = STOP;
     return;
-  }    
+  }
   else if(line_center < threshold && line_left >= threshold && line_right >= threshold)
   {
     // If the center detecter is strongest, go strait
