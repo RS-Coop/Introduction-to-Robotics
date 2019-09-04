@@ -76,7 +76,6 @@ void loop() {
       break;
     case TURN_AROUND:
       // turn 180 degrees
-      turn_around();
       break;
     case DETECT_LINE:
       // Drive until you detect a line
@@ -150,17 +149,12 @@ void grab()
 
   //NOTE: Not dealing with possibility of grab failure here
 
-  // Robot is turning arround while it grabs... We need to time wait while grabbing to fix this
-  current_state = TURN_AROUND;
-
-  return;
-}
-
+  
 // Turn 180 degrees
-void turn_around()
-{
   sparki.moveLeft(180);
   current_state = DETECT_LINE;
+
+  return;
 }
 
 // Drive until the line is detected
