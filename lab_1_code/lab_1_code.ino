@@ -6,12 +6,12 @@
 #define GRAB 3
 #define TURN_AROUND 4
 #define DETECT_LINE 5
-#define ORIENT_TOWARDS_LINE 6
+#define ORIENT_LINE 6
 #define FOLLOW_LINE 7
 #define STOP 8
 
 // Set up some global variables with default values to be replaced during operation
-int current_state = ROTATE;
+int current_state = DETECT_OBJ;
 const int threshold = 700; // IR reading threshold to detect whether there's a black line under the sensor
 int sonic_distance = 1000;
 int line_left = 1000;
@@ -25,7 +25,7 @@ void drive_obj();
 void grab();
 void turn_around();
 void detect_line();
-void orient_towards_line();
+void orient_line();
 void follow_line();
 void stop_sparki();
 
@@ -66,13 +66,11 @@ void loop() {
   switch (current_state)
   {
     case DETECT_OBJ:
-      rotate();
+      detect_obj();
       break;
-
     case DRIVE_OBJ:
       drive_obj();
       break;
-
     case GRAB:
       grab();
       break;
@@ -82,10 +80,10 @@ void loop() {
       break;
     case DETECT_LINE:
       // Drive until you detect a line
-      drive_line();
+      detect_line();
       break;
-    case ORIENT_TOWARDS_LINE:
-      orient_towards_line();
+    case ORIENT_LINE:
+      orient_line();
       break;
     case FOLLOW_LINE:
       // follow the detected line
@@ -95,7 +93,6 @@ void loop() {
       // Finished, stop the robot
       stop_sparki();
       break;
-
     default:
       //Finshed all tasks
       sparki.RGB(RGB_BLUE);
@@ -163,7 +160,7 @@ void grab()
 void turn_around()
 {
   sparki.moveLeft(180);
-  current_state = DRIVE_LINE;
+  current_state = DETECT_LINE;
 }
 
 // Drive until the line is detected
@@ -172,8 +169,7 @@ void detect_line()
   // Check if the line is detected
   if (line_left < threshold || line_right < threshold || line_center < threshold)
   {
-    // Change state to FOLLOW_LINE
-    current_state = ORIENT_TOWARDS_LINE;
+    current_state = FOLLOW_LINE;
   }
   else
   {
@@ -183,7 +179,7 @@ void detect_line()
   return;
 }
 
-void orient_towards_line()
+void orient_line()
 {
   sparki.moveLeft(45);
   current_state = FOLLOW_LINE;
@@ -192,7 +188,7 @@ void orient_towards_line()
 void follow_line()
 {
   // If all line detectos read high line readings, stop (you have reached the finish)
-  if((edge_left > threshold) && (edge_right > threshold) && (line_center > threshold) && (edge_left > threshold) && (edge_right > threshold))
+  if(((line_center < threshold) && (line_left < threshold) && (line_right < threshold)))
   {
     current_state = STOP;
     return;
