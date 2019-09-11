@@ -34,17 +34,17 @@ void measure_30cm_speed() {
   // TODO
   sparki.clearLCD();
   unsigned long start = millis();
-  sparki.moveForward();
+  sparki.moveForward(30);
 
-  while(((line_center > threshold) && (line_left > threshold) && (line_right > threshold)))
-  {
-    readSensors();
-  }
+//  while(((line_center > threshold) && (line_left > threshold) && (line_right > threshold)))
+//  {
+//    readSensors();
+//  }
   sparki.print("Time: ");
   sparki.println(millis()-start);
   sparki.updateLCD();
+  sparki.moveStop();
   delay(20000);
-  current_state = 0;
 }
 
 
