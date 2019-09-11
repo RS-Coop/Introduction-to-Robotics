@@ -56,12 +56,14 @@ void updateOdometry() {
 }
 
 void displayOdometry() {
+  sparki.clearLCD();
   sparki.print("pose_x");
   sparki.println(pose_x);
   sparki.print("pose_y");
   sparki.println(pose_y);
   sparki.print("pose_theta");
   sparki.println(pose_theta);
+  sparki.updateLCD();
 }
 
 void loop() {
@@ -69,7 +71,7 @@ void loop() {
   // TODO: Insert loop timing/initialization code here
   time = millis();
 
-  sparki.clearLCD();
+  
 
   updateOdometry();
   displayOdometry();
@@ -102,8 +104,7 @@ void loop() {
       sparki.moveStop();
       break;
   }
-//  sparki.updateLCD();
 
 
-  delay(1000*CYCLE_TIME);
+  delay(100 - (millis() - time));
 }
