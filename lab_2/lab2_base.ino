@@ -63,6 +63,7 @@ void loop() {
 
   // TODO: Insert loop timing/initialization code here
   time = millis();
+  sparki.clearLCD();
 
   updateOdometry();
 
