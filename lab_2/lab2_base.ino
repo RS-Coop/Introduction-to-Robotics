@@ -3,12 +3,12 @@
 #define CYCLE_TIME .100  // seconds
 #define AXLE_LENGTH 0.0857  // Meters -- Distance between wheels
 
-// Program States 
+// Program States
 #define CONTROLLER_FOLLOW_LINE 1
 #define CONTROLLER_DISTANCE_MEASURE 2
 
 
-int current_state = CONTROLLER_FOLLOW_LINE; // Change this variable to determine which controller to run
+int current_state = CONTROLLER_DISTANCE_MEASURE; // Change this variable to determine which controller to run
 const int threshold = 700;
 int line_left = 1000;
 int line_center = 1000;
@@ -31,7 +31,17 @@ void readSensors() {
 
 void measure_30cm_speed() {
   // TODO
-  
+  unsigned int time = millis();
+
+  sparki.moveForward();
+
+  while(((line_center > threshold) && (line_left > threshold) && (line_right > threshold)))
+  {
+    readSensors();
+  }
+
+  sparki.println(time);
+
 }
 
 
@@ -47,6 +57,8 @@ void loop() {
 
   // TODO: Insert loop timing/initialization code here
   time = millis();
+
+  updateOdometry();
 
   switch (current_state) {
     case CONTROLLER_FOLLOW_LINE:
