@@ -20,8 +20,10 @@ int line_left = 1000;
 int line_center = 1000;
 int line_right = 1000;
 
+// meters per second
 double speed30cm = 0.02739226;
 
+// pose_x and pose_y in meters
 float pose_x = 0., pose_y = 0., pose_theta = 0.;
 unsigned long time;
 
@@ -62,9 +64,12 @@ void updateOdometry() {
     // case: was forward
     case FORWARD:
       // add x distance to pose_x
-      pose_x += cos(pose_theta);
-      pose_y += sin(pose_theta);
+      // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
+      pose_x += cos(pose_theta) * speed30cm * 100 / (1000);
+
       // add y motion
+      // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
+      pose_y += sin(pose_theta) * speed30cm * 100 / (1000);
       break;
     // case: was moveLeft
     case LEFT: 
