@@ -31,17 +31,19 @@ void readSensors() {
 
 void measure_30cm_speed() {
   // TODO
-  unsigned int time = millis();
-
+  unsigned int timeTo30 = millis();
+  sparki.clearLCD();
   sparki.moveForward();
 
   while(((line_center > threshold) && (line_left > threshold) && (line_right > threshold)))
   {
     readSensors();
+    delay(100);
   }
-
-  sparki.println(time);
-
+  sparki.print("Time: ");
+  sparki.println(timeTo30);
+  sparki.updateLCD();
+  current_state = 0;
 }
 
 
@@ -63,7 +65,7 @@ void loop() {
 
   // TODO: Insert loop timing/initialization code here
   time = millis();
-
+//  sparki.clearLCD();
   updateOdometry();
 
   switch (current_state) {
@@ -88,7 +90,11 @@ void loop() {
     case CONTROLLER_DISTANCE_MEASURE:
       measure_30cm_speed();
       break;
+    default:
+      sparki.moveStop();
+      break;
   }
+//  sparki.updateLCD();
 
 
   delay(1000*CYCLE_TIME);
