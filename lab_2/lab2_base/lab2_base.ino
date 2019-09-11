@@ -15,7 +15,7 @@ int line_center = 1000;
 int line_right = 1000;
 
 float pose_x = 0., pose_y = 0., pose_theta = 0.;
-unsigned int time;
+unsigned long time;
 
 void setup() {
   pose_x = 0.;
@@ -31,7 +31,7 @@ void readSensors() {
 
 void measure_30cm_speed() {
   // TODO
-  unsigned int timeTo30 = millis();
+  time = millis();
   sparki.clearLCD();
   sparki.moveForward();
 
@@ -41,7 +41,7 @@ void measure_30cm_speed() {
     delay(100);
   }
   sparki.print("Time: ");
-  sparki.println(timeTo30);
+  sparki.println(millis()-time);
   sparki.updateLCD();
   current_state = 0;
 }
