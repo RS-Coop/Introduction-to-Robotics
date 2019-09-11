@@ -8,12 +8,18 @@
 #define CONTROLLER_FOLLOW_LINE 1
 #define CONTROLLER_DISTANCE_MEASURE 2
 
+#define LEFT 1
+#define RIGHT 2
+#define FORWARD 3
 
 int current_state = CONTROLLER_FOLLOW_LINE; // Change this variable to determine which controller to run
+int LAST_MOVEMENT = 0;
+
 const int threshold = 700;
 int line_left = 1000;
 int line_center = 1000;
 int line_right = 1000;
+
 double speed30cm = 0.02739226;
 
 float pose_x = 0., pose_y = 0., pose_theta = 0.;
@@ -52,7 +58,6 @@ void measure_30cm_speed() {
 
 void updateOdometry() {
   // TODO
-
   switch (LAST_MOVEMENT) {
     // case: was forward
     case :
@@ -97,17 +102,23 @@ void loop() {
       if(line_center < threshold && line_left >= threshold && line_right >= threshold)
       {
         // If the center detecter is strongest, go strait
+        time = millis();
         sparki.moveForward();
+        LAST_MOVEMENT = FORWARD;
       }
       else if(line_left < threshold && line_left < line_right)
       {
         // else if the left sensor is the strongest, turn left
+        time = millis()
         sparki.moveLeft();
+        LAST_MOVEMENT = LEFT;
       }
       else if(line_right < threshold && line_right < line_left)
       {
         // else if the right sensor is strongest, turn right
+        time = millis();
         sparki.moveRight();
+        LAST_MOVEMENT = RIGHT;
       }
       break;
 
@@ -121,4 +132,5 @@ void loop() {
   }
 
   delay(100 - (millis() - time));
+  sparki.moveStop();
 }
