@@ -62,8 +62,8 @@ void updateOdometry() {
     // case: was forward
     case FORWARD:
       // add x distance to pose_x
-      pose_x += cos(pose_theta)
-      pose_y += sin(pose_theta)
+      pose_x += cos(pose_theta);
+      pose_y += sin(pose_theta);
       // add y motion
       break;
     // case: was moveLeft
