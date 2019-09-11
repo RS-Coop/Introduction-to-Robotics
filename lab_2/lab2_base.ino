@@ -41,12 +41,12 @@ void measure_30cm_speed() {
   }
 
   sparki.println(time);
-
 }
 
 
 void updateOdometry() {
-  // TODO
+  // TODO 
+  // xI (k + 1) = xI (k) + ∆x(k)
 }
 
 void displayOdometry() {
