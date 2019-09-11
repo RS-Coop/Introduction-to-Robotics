@@ -15,6 +15,7 @@ int line_center = 1000;
 int line_right = 1000;
 
 float pose_x = 0., pose_y = 0., pose_theta = 0.;
+unsigned int time;
 
 void setup() {
   pose_x = 0.;
@@ -30,6 +31,7 @@ void readSensors() {
 
 void measure_30cm_speed() {
   // TODO
+  
 }
 
 
@@ -44,10 +46,26 @@ void displayOdometry() {
 void loop() {
 
   // TODO: Insert loop timing/initialization code here
-  
+  time = millis();
+
   switch (current_state) {
     case CONTROLLER_FOLLOW_LINE:
-      // TODO
+      // If all line detectos read high line readings, stop (you have reached the finish)
+      if(line_center < threshold && line_left >= threshold && line_right >= threshold)
+      {
+        // If the center detecter is strongest, go strait
+        sparki.moveForward();
+      }
+      else if(line_left < threshold && line_left < line_right)
+      {
+        // else if the left sensor is the strongest, turn left
+        sparki.moveLeft();
+      }
+      else(line_right < threshold && line_right < line_left)
+      {
+        // else if the right sensor is strongest, turn right
+        sparki.moveRight();
+      }
       break;
     case CONTROLLER_DISTANCE_MEASURE:
       measure_30cm_speed();
