@@ -102,21 +102,21 @@ void loop() {
   switch (current_state) {
     case CONTROLLER_FOLLOW_LINE:
       // If all line detectos read high line readings, stop (you have reached the finish)
-      if(line_center < threshold && line_left >= threshold && line_right >= threshold)
+      if(line_center < threshold && line_left > threshold && line_right > threshold)
       {
         // If the center detecter is strongest, go strait
         time = millis();
         sparki.moveForward();
         LAST_MOVEMENT = FORWARD;
       }
-      else if(line_left < threshold && line_left < line_right)
+      else if(line_left < threshold)
       {
         // else if the left sensor is the strongest, turn left
-        time = millis()
+        time = millis();
         sparki.moveLeft();
         LAST_MOVEMENT = LEFT;
       }
-      else if(line_right < threshold && line_right < line_left)
+      else //if(line_right < threshold && line_right < line_left) // commented out to find bug where he only turnned right.
       {
         // else if the right sensor is strongest, turn right
         time = millis();
@@ -128,12 +128,8 @@ void loop() {
     case CONTROLLER_DISTANCE_MEASURE:
       measure_30cm_speed();
       break;
-
-    default:
-      sparki.moveStop();
-      break;
   }
 
   delay(100 - (millis() - time));
-  sparki.moveStop();
+  //sparki.moveStop();
 }
