@@ -13,6 +13,7 @@ const int threshold = 700;
 int line_left = 1000;
 int line_center = 1000;
 int line_right = 1000;
+int speed30cm = 10952;
 
 float pose_x = 0., pose_y = 0., pose_theta = 0.;
 unsigned long time;
