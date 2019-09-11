@@ -51,6 +51,8 @@ void measure_30cm_speed() {
 
 void updateOdometry() {
   // TODO
+
+
 }
 
 void displayOdometry() {
