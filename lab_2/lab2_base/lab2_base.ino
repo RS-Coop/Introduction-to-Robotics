@@ -1,4 +1,5 @@
 #include <Sparki.h>
+#include <Math.h>
 
 #define CYCLE_TIME .100  // seconds
 #define AXLE_LENGTH 0.0857  // Meters -- Distance between wheels
@@ -57,8 +58,23 @@ void measure_30cm_speed() {
 
 void updateOdometry() {
   // TODO
-
-
+  switch (LAST_MOVEMENT) {
+    // case: was forward
+    case FORWARD:
+      // add x distance to pose_x
+      pose_x += cos(pose_theta);
+      pose_y += sin(pose_theta);
+      // add y motion
+      break;
+    // case: was moveLeft
+    case LEFT: 
+      break;
+    // case: was moveRight
+    case RIGHT:
+      break;
+    default:
+      break;
+  }
 }
 
 void displayOdometry() {
@@ -114,7 +130,6 @@ void loop() {
       sparki.moveStop();
       break;
   }
-
 
   delay(100 - (millis() - time));
   sparki.moveStop();
