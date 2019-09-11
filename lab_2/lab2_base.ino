@@ -3,7 +3,7 @@
 #define CYCLE_TIME .100  // seconds
 #define AXLE_LENGTH 0.0857  // Meters -- Distance between wheels
 
-// Program States
+// Program States 
 #define CONTROLLER_FOLLOW_LINE 1
 #define CONTROLLER_DISTANCE_MEASURE 2
 
