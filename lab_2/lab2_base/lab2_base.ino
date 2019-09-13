@@ -67,7 +67,8 @@ void updateOdometry() {
       // add y motion
       break;
     // case: was moveLeft
-    case LEFT: 
+    case LEFT:
+      pose_theta += 2*(speed*0.1)/AXLE_LENGTH;
       break;
     // case: was moveRight
     case RIGHT:
