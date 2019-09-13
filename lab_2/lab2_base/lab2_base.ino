@@ -22,6 +22,7 @@ int line_right = 1000;
 
 double speed = 0.02739226;
 
+// pose_x and pose_y in meters
 float pose_x = 0., pose_y = 0., pose_theta = 0.;
 unsigned long time;
 
@@ -55,16 +56,18 @@ void measure_30cm_speed() {
   delay(20000);
 }
 
-
 void updateOdometry() {
   // TODO
   switch (LAST_MOVEMENT) {
     // case: was forward
     case FORWARD:
       // add x distance to pose_x
-      pose_x += cos(pose_theta);
-      pose_y += sin(pose_theta);
+      // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
+      pose_x += cos(pose_theta) * speed * 100 / (1000);
+
       // add y motion
+      // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
+      pose_y += sin(pose_theta) * speed * 100 / (1000);
       break;
     // case: was moveLeft
     case LEFT:
@@ -100,21 +103,21 @@ void loop() {
   switch (current_state) {
     case CONTROLLER_FOLLOW_LINE:
       // If all line detectos read high line readings, stop (you have reached the finish)
-      if(line_center < threshold && line_left >= threshold && line_right >= threshold)
+      if(line_center < threshold && line_left > threshold && line_right > threshold)
       {
         // If the center detecter is strongest, go strait
         time = millis();
         sparki.moveForward();
         LAST_MOVEMENT = FORWARD;
       }
-      else if(line_left < threshold && line_left < line_right)
+      else if(line_left < threshold)
       {
         // else if the left sensor is the strongest, turn left
-        time = millis()
+        time = millis();
         sparki.moveLeft();
         LAST_MOVEMENT = LEFT;
       }
-      else if(line_right < threshold && line_right < line_left)
+      else //if(line_right < threshold && line_right < line_left) // commented out to find bug where he only turnned right.
       {
         // else if the right sensor is strongest, turn right
         time = millis();
@@ -126,12 +129,8 @@ void loop() {
     case CONTROLLER_DISTANCE_MEASURE:
       measure_30cm_speed();
       break;
-
-    default:
-      sparki.moveStop();
-      break;
   }
 
   delay(100 - (millis() - time));
-  sparki.moveStop();
+  //sparki.moveStop();
 }
