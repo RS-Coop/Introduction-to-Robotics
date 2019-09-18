@@ -14,6 +14,12 @@
 #define NONE 0
 #define BCK -1
 
+#define LEFT 1
+#define RIGHT 2
+#define FORWARD 3
+#define ORIGIN 4
+
+
 
 // Line following configuration variables
 const int threshold = 700;
@@ -23,6 +29,7 @@ int line_right = 1000;
 
 // Controller and dTheta update rule settings
 const int current_state = CONTROLLER_GOTO_POSITION_PART2;
+int LAST_MOVEMENT = 0;
 
 // Odometry bookkeeping
 float orig_dist_to_goal = 0.0;
@@ -97,11 +104,11 @@ void updateOdometry() {
       break;
     // case: was moveLeft
     case LEFT:
-      pose_theta += 2*(ROBOT_SPEED*0.1)/AXLE_LENGTH;
+      pose_theta += 2*(ROBOT_SPEED*0.1)/AXLE_DIAMETER;
       break;
     // case: was moveRight
     case RIGHT:
-      pose_theta -= 2*(ROBOT_SPEED*0.1)/AXLE_LENGTH;
+      pose_theta -= 2*(ROBOT_SPEED*0.1)/AXLE_DIAMETER;
       break;
     case ORIGIN:
       // Un-comment to see without loop closure.
@@ -144,6 +151,7 @@ void loop() {
   unsigned long end_time = 0;
   unsigned long delay_time = 0;
 
+  
   switch (current_state) {
     case CONTROLLER_FOLLOW_LINE:
       // Useful for testing odometry updates
@@ -201,7 +209,7 @@ void loop() {
       //      sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
       //      sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
 
-      time = millis();
+      begin_time = millis();
   }
 
   sparki.clearLCD();
@@ -215,4 +223,6 @@ void loop() {
   else
     delay(10);
 }
+
+
 
