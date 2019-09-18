@@ -71,7 +71,7 @@ void set_pose_destination(float x, float y, float t) {
   dest_pose_theta = t;
   if (dest_pose_theta > M_PI) dest_pose_theta -= 2*M_PI;
   if (dest_pose_theta < -M_PI) dest_pose_theta += 2*M_PI;
-  orig_dist_to_goal = 0; // TODO
+  orig_dist_to_goal = sqrt((pose_x - dest_pose_x)^2+(pose_y - dest_pose_y)^2); // Updated by Cooper, was 0
 }
 
 void readSensors() {
@@ -97,7 +97,7 @@ void displayOdometry() {
   sparki.print("Y: ");
   sparki.print(pose_y);
   sparki.print(" Yg: ");
-  sparki.println(dest_pose_y); 
+  sparki.println(dest_pose_y);
   sparki.print("T: ");
   sparki.print(to_degrees(pose_theta));
   sparki.print(" Tg: ");
@@ -109,14 +109,14 @@ void displayOdometry() {
   sparki.println(dTheta);
   sparki.print("phl: "); sparki.print(phi_l); sparki.print(" phr: "); sparki.println(phi_r);
   sparki.print("p: "); sparki.print(d_err); sparki.print(" a: "); sparki.println(to_degrees(b_err));
-  sparki.print("h: "); sparki.println(to_degrees(h_err));  
+  sparki.print("h: "); sparki.println(to_degrees(h_err));
 }
 
 void loop() {
   unsigned long begin_time = millis();
   unsigned long end_time = 0;
   unsigned long delay_time = 0;
-   
+
   switch (current_state) {
     case CONTROLLER_FOLLOW_LINE:
       // Useful for testing odometry updates
@@ -139,16 +139,19 @@ void loop() {
         pose_x = 0.;
         pose_y = 0.;
         pose_theta = 0.;
-      } 
+      }
       break;
     case CONTROLLER_GOTO_POSITION_PART2:
       // TODO: Implement solution using moveLeft, moveForward, moveRight functions
       // This case should arrest control of the program's control flow (taking as long as it needs to, ignoring the 100ms loop time)
       // and move the robot to its final destination
+      d_err = sqrt((pose_x - dest_pose_x)^2+(pose_y - dest_pose_y)^2)
+      b_err = pose_theta - atan2((pose_y-dest_pose_y),(pose_x - dest_pose_x));
+      h_err = dest_pose_theta - pose_theta;
 
-      
-      break;      
-    case CONTROLLER_GOTO_POSITION_PART3:      
+
+      break;
+    case CONTROLLER_GOTO_POSITION_PART3:
       updateOdometry();
       // TODO: Implement solution using motorRotate and proportional feedback controller.
       // sparki.motorRotate function calls for reference:
@@ -169,4 +172,3 @@ void loop() {
   else
     delay(10);
 }
-
