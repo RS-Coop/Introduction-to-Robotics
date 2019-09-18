@@ -1,5 +1,5 @@
 #include <Sparki.h>
-#include <Math.h>
+#include <math.h>
 
 #define CYCLE_TIME .100  // seconds
 #define AXLE_LENGTH 0.0857  // Meters -- Distance between wheels
@@ -100,6 +100,7 @@ void loop() {
 
   updateOdometry();
   displayOdometry();
+  readSensors();
 
   switch (current_state) {
     case CONTROLLER_FOLLOW_LINE:
@@ -134,5 +135,5 @@ void loop() {
 
   //Should check here to see if this will be negative.
     delay(100 - (millis() - time));
-  //sparki.moveStop();
+  sparki.moveStop();
 }
