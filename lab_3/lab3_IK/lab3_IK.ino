@@ -22,7 +22,7 @@ int line_center = 1000;
 int line_right = 1000;
 
 // Controller and dTheta update rule settings
-const int current_state = CONTROLLER_GOTO_POSITION_PART2;
+/*const*/ int current_state = CONTROLLER_GOTO_POSITION_PART2;
 
 // Odometry bookkeeping
 float orig_dist_to_goal = 0.0;
@@ -148,23 +148,37 @@ void loop() {
       // and move the robot to its final destination
       d_err = sqrt(sq((pose_x - dest_pose_x))+sq((pose_y - dest_pose_y)));
       b_err = pose_theta - atan2((pose_y-dest_pose_y),(pose_x - dest_pose_x));
-      h_err = dest_pose_theta - pose_theta;
+
+      displayOdometry();
 
       if(b_err > 0)
         sparki.moveRight(to_degrees(b_err));
       else
         sparki.moveLeft(to_degrees(-b_err));
       pose_theta = atan2((double)(pose_y-dest_pose_y),(double)(pose_x - dest_pose_x));
+      b_err = 0;
+      
+      displayOdometry();
 
       sparki.moveForward(d_err * 100);
       pose_x = dest_pose_x;
       pose_y = dest_pose_y;
+      d_err = 0;
+      
+      displayOdometry();
+
+      h_err = dest_pose_theta - pose_theta;
 
       if(h_err < 0)
         sparki.moveRight(to_degrees(-h_err));
       else
         sparki.moveLeft(to_degrees(h_err));
       pose_theta = dest_pose_theta;
+      displayOdometry();
+
+      sparki.moveStop();
+
+      current_state = 0;
 
 
       break;
