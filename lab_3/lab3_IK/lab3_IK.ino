@@ -84,7 +84,33 @@ void readSensors() {
 
 void updateOdometry() {
   // TODO: Update pose_x, pose_y, pose_theta
+  switch (LAST_MOVEMENT) {
+    // case: was forward
+    case FORWARD:
+      // add x distance to pose_x
+      // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
+      pose_x += cos(pose_theta) * ROBOT_SPEED * CYCLE_TIME / (1000);
 
+      // add y motion
+      // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
+      pose_y += sin(pose_theta) * ROBOT_SPEED * CYCLE_TIME / (1000);
+      break;
+    // case: was moveLeft
+    case LEFT:
+      pose_theta += 2*(ROBOT_SPEED*0.1)/AXLE_LENGTH;
+      break;
+    // case: was moveRight
+    case RIGHT:
+      pose_theta -= 2*(ROBOT_SPEED*0.1)/AXLE_LENGTH;
+      break;
+    case ORIGIN:
+      // Un-comment to see without loop closure.
+      pose_x = 0;
+      pose_y = 0;
+      pose_theta = 0;
+    default:
+      break;
+  }
   // Bound theta
   if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
   if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
@@ -172,7 +198,7 @@ void loop() {
       //      sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
       //      sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
 
-      break;
+      time = millis();
   }
 
   sparki.clearLCD();
@@ -186,3 +212,4 @@ void loop() {
   else
     delay(10);
 }
+
