@@ -151,10 +151,14 @@ void loop() {
       h_err = dest_pose_theta - pose_theta;
 
       sparki.moveLeft();
+      pose_theta = dest_pose_theta
 
       sparki.moveForward();
+      pose_x = dest_pose_x;
+      pose_y = dest_pose_y;
 
       sparki.moveRight();
+      pose_theta
 
 
       break;
