@@ -28,7 +28,7 @@ int line_center = 1000;
 int line_right = 1000;
 
 // Controller and dTheta update rule settings
-const int current_state = CONTROLLER_GOTO_POSITION_PART2;
+/*const*/ int current_state = CONTROLLER_GOTO_POSITION_PART2;
 int LAST_MOVEMENT = 0;
 
 // Odometry bookkeeping
@@ -62,6 +62,7 @@ float to_degrees(double rad) {
 }
 
 void setup() {
+  sparki.clearLCD();
   pose_x = 0.;
   pose_y = 0.;
   pose_theta = 0.;
@@ -69,7 +70,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.15,0.05, to_radians(135));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.3,0.00, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -124,6 +125,7 @@ void updateOdometry() {
 }
 
 void displayOdometry() {
+  sparki.clearLCD();
   sparki.print("X: ");
   sparki.print(pose_x);
   sparki.print(" Xg: ");
@@ -184,10 +186,12 @@ void loop() {
       b_err = pose_theta - atan2((pose_y-dest_pose_y),(pose_x - dest_pose_x));
 
       displayOdometry();
-
+      Serial.println(b_err);
+      delay(100);
+      
       if(b_err > 0)
         sparki.moveRight(to_degrees(b_err));
-      else
+      else if(b_err < 0)
         sparki.moveLeft(to_degrees(-b_err));
       pose_theta = atan2((double)(pose_y-dest_pose_y),(double)(pose_x - dest_pose_x));
       b_err = 0;
