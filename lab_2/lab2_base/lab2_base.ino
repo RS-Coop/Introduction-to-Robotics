@@ -95,6 +95,15 @@ void displayOdometry() {
   sparki.println(pose_y);
   sparki.print("pose_theta");
   sparki.println(pose_theta*180/PI);
+
+  sparki.print("Line Left: "); // show left line sensor on screen
+  sparki.println(line_left);
+
+  sparki.print("Line Center: "); // show center line sensor on screen
+  sparki.println(line_center);
+
+  sparki.print("Line Right: "); // show right line sensor on screen
+  sparki.println(line_right);
   sparki.updateLCD();
 }
 
@@ -117,12 +126,12 @@ void loop() {
         sparki.moveForward();
         LAST_MOVEMENT = ORIGIN;
       }
-      else if(line_center < threshold && line_left > threshold && line_right > threshold)
+      else if(line_right < threshold && line_right < line_left)
       {
-        // If the center detecter is strongest, go strait
+        // else if the right sensor is strongest, turn right
         time = millis();
-        sparki.moveForward();
-        LAST_MOVEMENT = FORWARD;
+        sparki.moveRight();
+        LAST_MOVEMENT = RIGHT;
       }
       else if(line_left < threshold && line_left < line_right)
       {
@@ -131,12 +140,12 @@ void loop() {
         sparki.moveLeft();
         LAST_MOVEMENT = LEFT;
       }
-      else if(line_right < threshold && line_right < line_left) // commented out to find bug where he only turnned right.
+      else ///if(line_center < threshold && line_left > threshold && line_right > threshold) // commented out to find bug where he only turnned right.
       {
-        // else if the right sensor is strongest, turn right
+        // If the center detecter is strongest, go strait
         time = millis();
-        sparki.moveRight();
-        LAST_MOVEMENT = RIGHT;
+        sparki.moveForward();
+        LAST_MOVEMENT = FORWARD;
       }
       break;
 
@@ -151,3 +160,4 @@ void loop() {
     
   sparki.moveStop();
 }
+
