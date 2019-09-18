@@ -143,7 +143,7 @@ void loop() {
   int lineCenter = sparki.lineCenter(); // measure the center IR sensor
   int lineRight  = sparki.lineRight();  // measure the right IR sensor
 
-  if ( lineLeft < threshold ) // if line is below left line sensor
+  if ( lineLeft < threshold && lineLeft) // if line is below left line sensor
   {
     sparki.moveLeft(); // turn left
   }
