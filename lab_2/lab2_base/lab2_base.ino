@@ -15,7 +15,7 @@
 int current_state = CONTROLLER_FOLLOW_LINE; // Change this variable to determine which controller to run
 int LAST_MOVEMENT = 0;
 
-const int threshold = 700;
+//const int threshold = 700;
 int line_left = 1000;
 int line_center = 1000;
 int line_right = 1000;
@@ -96,44 +96,81 @@ void displayOdometry() {
 void loop() {
 
   // TODO: Insert loop timing/initialization code here
-  time = millis();
+  //time = millis();
 
-  updateOdometry();
-  displayOdometry();
-  readSensors();
+//  updateOdometry();
+//  displayOdometry();
+//  readSensors();
+//
+//  switch (current_state) {
+//    case CONTROLLER_FOLLOW_LINE:
+//      // If all line detectos read high line readings, stop (you have reached the finish)
+//      if(line_center < threshold && line_left > threshold && line_right > threshold)
+//      {
+//        // If the center detecter is strongest, go strait
+//        time = millis();
+//        sparki.moveForward();
+//        LAST_MOVEMENT = FORWARD;
+//      }
+//      else if(line_left < threshold && line_left < line_right)
+//      {
+//        // else if the left sensor is the strongest, turn left
+//        time = millis();
+//        sparki.moveLeft();
+//        LAST_MOVEMENT = LEFT;
+//      }
+//      else if(line_right < threshold && line_right < line_left) // commented out to find bug where he only turnned right.
+//      {
+//        // else if the right sensor is strongest, turn right
+//        time = millis();
+//        sparki.moveRight();
+//        LAST_MOVEMENT = RIGHT;
+//      }
+//      break;
+//
+//    case CONTROLLER_DISTANCE_MEASURE:
+//      measure_30cm_speed();
+//      break;
+//  }
+//
+//  //Should check here to see if this will be negative.
+//    delay(100 - (millis() - time));
+//  sparki.moveStop();
 
-  switch (current_state) {
-    case CONTROLLER_FOLLOW_LINE:
-      // If all line detectos read high line readings, stop (you have reached the finish)
-      if(line_center < threshold && line_left > threshold && line_right > threshold)
-      {
-        // If the center detecter is strongest, go strait
-        time = millis();
-        sparki.moveForward();
-        LAST_MOVEMENT = FORWARD;
-      }
-      else if(line_left < threshold)
-      {
-        // else if the left sensor is the strongest, turn left
-        time = millis();
-        sparki.moveLeft();
-        LAST_MOVEMENT = LEFT;
-      }
-      else //if(line_right < threshold && line_right < line_left) // commented out to find bug where he only turnned right.
-      {
-        // else if the right sensor is strongest, turn right
-        time = millis();
-        sparki.moveRight();
-        LAST_MOVEMENT = RIGHT;
-      }
-      break;
-
-    case CONTROLLER_DISTANCE_MEASURE:
-      measure_30cm_speed();
-      break;
+  int threshold = 500;
+ 
+  int lineLeft   = sparki.lineLeft();   // measure the left IR sensor
+  int lineCenter = sparki.lineCenter(); // measure the center IR sensor
+  int lineRight  = sparki.lineRight();  // measure the right IR sensor
+ 
+  if ( lineLeft < threshold ) // if line is below left line sensor
+  {  
+    sparki.moveLeft(); // turn left
   }
-
-  //Should check here to see if this will be negative.
-    delay(100 - (millis() - time));
-  sparki.moveStop();
+ 
+  if ( lineRight < threshold ) // if line is below right line sensor
+  {  
+    sparki.moveRight(); // turn right
+  }
+ 
+  // if the center line sensor is the only one reading a line
+  if ( (lineCenter < threshold) && (lineLeft > threshold) && (lineRight > threshold) )
+  {
+    sparki.moveForward(); // move forward
+  }  
+ 
+  sparki.clearLCD(); // wipe the screen
+ 
+  sparki.print("Line Left: "); // show left line sensor on screen
+  sparki.println(lineLeft);
+ 
+  sparki.print("Line Center: "); // show center line sensor on screen
+  sparki.println(lineCenter);
+ 
+  sparki.print("Line Right: "); // show right line sensor on screen
+  sparki.println(lineRight);
+ 
+  sparki.updateLCD(); // display all of the information written to the screen
+ 
+  delay(100); // wait 0.1 seconds
 }
