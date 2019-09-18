@@ -1,4 +1,5 @@
 #include <Sparki.h>
+#include <Math.h>
 
 #define M_PI 3.14159
 #define ROBOT_SPEED 0.0275 // meters/second
@@ -148,6 +149,21 @@ void loop() {
       d_err = sqrt((pose_x - dest_pose_x)^2+(pose_y - dest_pose_y)^2)
       b_err = pose_theta - atan2((pose_y-dest_pose_y),(pose_x - dest_pose_x));
       h_err = dest_pose_theta - pose_theta;
+
+      while(b_err > 0)
+      {
+        
+      }
+
+      while(d_err > 0)
+      {
+
+      }
+
+      while(h_err > 0)
+      {
+
+      }
 
 
       break;
