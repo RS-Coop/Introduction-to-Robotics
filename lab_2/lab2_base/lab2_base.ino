@@ -94,7 +94,7 @@ void displayOdometry() {
   sparki.print("pose_y");
   sparki.println(pose_y);
   sparki.print("pose_theta");
-  sparki.println(pose_theta*180/PI);
+  sparki.println((pose_theta*180/PI)%360);
   sparki.updateLCD();
 }
 
@@ -148,6 +148,6 @@ void loop() {
   //Should check here to see if this will be negative.
   if(100 - (millis()- time) > 0)
     delay(100 - (millis() - time));
-    
+
   sparki.moveStop();
 }
