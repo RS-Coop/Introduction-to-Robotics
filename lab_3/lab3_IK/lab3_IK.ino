@@ -1,5 +1,5 @@
 #include <Sparki.h>
-#include <Math.h>
+#include <math.h>
 
 #define M_PI 3.14159
 #define ROBOT_SPEED 0.0275 // meters/second
@@ -72,7 +72,7 @@ void set_pose_destination(float x, float y, float t) {
   dest_pose_theta = t;
   if (dest_pose_theta > M_PI) dest_pose_theta -= 2*M_PI;
   if (dest_pose_theta < -M_PI) dest_pose_theta += 2*M_PI;
-  orig_dist_to_goal = sqrt((pose_x - dest_pose_x)^2+(pose_y - dest_pose_y)^2); // Updated by Cooper, was 0
+  orig_dist_to_goal = sqrt(sq((pose_x - dest_pose_x))+sq((pose_y - dest_pose_y))); // Updated by Cooper, was 0
 }
 
 void readSensors() {
@@ -172,22 +172,25 @@ void loop() {
       // TODO: Implement solution using moveLeft, moveForward, moveRight functions
       // This case should arrest control of the program's control flow (taking as long as it needs to, ignoring the 100ms loop time)
       // and move the robot to its final destination
-      d_err = sqrt((pose_x - dest_pose_x)^2+(pose_y - dest_pose_y)^2)
+      d_err = sqrt(sq((pose_x - dest_pose_x))+sq((pose_y - dest_pose_y)));
       b_err = pose_theta - atan2((pose_y-dest_pose_y),(pose_x - dest_pose_x));
       h_err = dest_pose_theta - pose_theta;
 
       if(b_err > 0)
-        sparki.moveLeft(to_degrees());
+        sparki.moveRight(to_degrees(b_err));
       else
-        sparki.moveLeft(to_)
-      pose_theta = atan2((pose_y-dest_pose_y),(pose_x - dest_pose_x))
+        sparki.moveLeft(to_degrees(-b_err));
+      pose_theta = atan2((double)(pose_y-dest_pose_y),(double)(pose_x - dest_pose_x));
 
       sparki.moveForward(d_err * 100);
       pose_x = dest_pose_x;
       pose_y = dest_pose_y;
 
-      sparki.moveRight(to_degrees());
-      pose_theta = dest_pose_theta
+      if(h_err < 0)
+        sparki.moveRight(to_degrees(-h_err));
+      else
+        sparki.moveLeft(to_degrees(h_err));
+      pose_theta = dest_pose_theta;
 
 
       break;
