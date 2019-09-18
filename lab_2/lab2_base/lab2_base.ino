@@ -75,6 +75,7 @@ void updateOdometry() {
       break;
     // case: was moveRight
     case RIGHT:
+      pose_theta -= 2*(speed*0.1)/AXLE_LENGTH;
       break;
     default:
       break;
@@ -131,6 +132,7 @@ void loop() {
       break;
   }
 
-  delay(100 - (millis() - time));
+  //Should check here to see if this will be negative.
+    delay(100 - (millis() - time));
   //sparki.moveStop();
 }
