@@ -160,8 +160,10 @@ void loop() {
       pose_x = dest_pose_x;
       pose_y = dest_pose_y;
 
-      if(h_err > 0)
-        sparki.moveRight(to_degrees());
+      if(h_err < 0)
+        sparki.moveRight(to_degrees(-h_err));
+      else
+        sparki.moveLeft(to_degrees(h_err));
       pose_theta = dest_pose_theta
 
 
