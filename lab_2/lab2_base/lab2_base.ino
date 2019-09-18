@@ -94,7 +94,7 @@ void displayOdometry() {
   sparki.print("pose_y");
   sparki.println(pose_y);
   sparki.print("pose_theta");
-  sparki.println(pose_theta);
+  sparki.println(pose_theta*180/PI);
   sparki.updateLCD();
 }
 
@@ -113,6 +113,7 @@ void loop() {
       
       if(((line_center < threshold) && (line_left < threshold) && (line_right < threshold)))
       {
+        time = millis();
         sparki.moveForward();
         LAST_MOVEMENT = ORIGIN;
       }
@@ -185,3 +186,4 @@ void loop() {
 // 
 //  delay(100); // wait 0.1 seconds
 }
+
