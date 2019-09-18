@@ -79,9 +79,10 @@ void updateOdometry() {
       pose_theta -= 2*(speed*0.1)/AXLE_LENGTH;
       break;
     case ORIGIN:
-      pose_x = 0;
-      pose_y = 0;
-      pose_theta = 0;
+      // Un-comment to see without loop closure.
+//      pose_x = 0;
+//      pose_y = 0;
+//      pose_theta = 0;
     default:
       break;
   }
