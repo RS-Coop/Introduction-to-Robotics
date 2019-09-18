@@ -70,7 +70,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.0,0.3, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.2,0.2, to_radians(180));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -212,6 +212,7 @@ void loop() {
       else
         sparki.moveLeft(to_degrees(h_err));
       pose_theta = dest_pose_theta;
+      h_err = 0;
       displayOdometry();
 
       sparki.moveStop();
