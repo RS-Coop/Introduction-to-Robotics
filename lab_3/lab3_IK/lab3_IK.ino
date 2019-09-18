@@ -70,7 +70,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.3,0.00, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.0,0.3, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -183,17 +183,17 @@ void loop() {
       // This case should arrest control of the program's control flow (taking as long as it needs to, ignoring the 100ms loop time)
       // and move the robot to its final destination
       d_err = sqrt(sq((pose_x - dest_pose_x))+sq((pose_y - dest_pose_y)));
-      b_err = pose_theta - atan2((pose_y-dest_pose_y),(pose_x - dest_pose_x));
+      b_err = atan2((dest_pose_y-pose_y),(dest_pose_x - pose_x)) - pose_theta;
 
       displayOdometry();
       Serial.println(b_err);
       delay(100);
-      
+
       if(b_err > 0)
-        sparki.moveRight(to_degrees(b_err));
+        sparki.moveLeft(to_degrees(b_err));
       else if(b_err < 0)
-        sparki.moveLeft(to_degrees(-b_err));
-      pose_theta = atan2((double)(pose_y-dest_pose_y),(double)(pose_x - dest_pose_x));
+        sparki.moveRight(to_degrees(abs(b_err)));
+      pose_theta += b_err;
       b_err = 0;
 
       displayOdometry();
