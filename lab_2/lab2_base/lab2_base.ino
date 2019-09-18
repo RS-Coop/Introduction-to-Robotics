@@ -94,10 +94,7 @@ void displayOdometry() {
   sparki.print("pose_y");
   sparki.println(pose_y);
   sparki.print("pose_theta");
-<<<<<<< HEAD
   sparki.println((pose_theta*180/PI)%360);
-=======
-  sparki.println(pose_theta*180/PI);
 
   sparki.print("Line Left: "); // show left line sensor on screen
   sparki.println(line_left);
@@ -107,7 +104,6 @@ void displayOdometry() {
 
   sparki.print("Line Right: "); // show right line sensor on screen
   sparki.println(line_right);
->>>>>>> b4bd96eb3914905efba51af376542b2797bd0dc7
   sparki.updateLCD();
 }
 
@@ -164,4 +160,3 @@ void loop() {
 
   sparki.moveStop();
 }
-
