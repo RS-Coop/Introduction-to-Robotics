@@ -146,6 +146,8 @@ void loop() {
   }
 
   //Should check here to see if this will be negative.
-  delay(100 - (millis() - time));
+  if(100 - (millis()- time) > 0)
+    delay(100 - (millis() - time));
+    
   sparki.moveStop();
 }
