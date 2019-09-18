@@ -80,9 +80,9 @@ void updateOdometry() {
       break;
     case ORIGIN:
       // Un-comment to see without loop closure.
-//      pose_x = 0;
-//      pose_y = 0;
-//      pose_theta = 0;
+      pose_x = 0;
+      pose_y = 0;
+      pose_theta = 0;
     default:
       break;
   }
@@ -95,7 +95,7 @@ void displayOdometry() {
   sparki.print("pose_y");
   sparki.println(pose_y);
   sparki.print("pose_theta");
-  sparki.println((pose_theta*180/PI)%360);
+  sparki.println(pose_theta*180.0/PI);
 
   sparki.print("Line Left: "); // show left line sensor on screen
   sparki.println(line_left);
@@ -158,6 +158,8 @@ void loop() {
   //Should check here to see if this will be negative.
   if(100 - (millis()- time) > 0)
     delay(100 - (millis() - time));
-
+    
   sparki.moveStop();
 }
+
+
