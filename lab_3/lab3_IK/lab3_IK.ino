@@ -150,26 +150,11 @@ void loop() {
       b_err = pose_theta - atan2((pose_y-dest_pose_y),(pose_x - dest_pose_x));
       h_err = dest_pose_theta - pose_theta;
 
-      while(b_err > 0)
-      {
-        sparki.moveLeft();
+      sparki.moveLeft();
 
-        b_err = pose_theta - atan2((pose_y-dest_pose_y),(pose_x - dest_pose_x));
-      }
+      sparki.moveForward();
 
-      while(d_err > 0)
-      {
-        sparki.moveForward();
-
-        d_err = sqrt((pose_x - dest_pose_x)^2+(pose_y - dest_pose_y)^2)
-      }
-
-      while(h_err > 0)
-      {
-        sparki.moveRight();
-
-        h_err = dest_pose_theta - pose_theta;
-      }
+      sparki.moveRight();
 
 
       break;
