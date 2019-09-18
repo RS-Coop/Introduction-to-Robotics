@@ -28,12 +28,8 @@ int line_center = 1000;
 int line_right = 1000;
 
 // Controller and dTheta update rule settings
-<<<<<<< HEAD
-/*const*/ int current_state = CONTROLLER_GOTO_POSITION_PART2;
-=======
 const int current_state = CONTROLLER_GOTO_POSITION_PART2;
 int LAST_MOVEMENT = 0;
->>>>>>> 29948c44d00a1423c66f5cfd83fd8697d5479d35
 
 // Odometry bookkeeping
 float orig_dist_to_goal = 0.0;
@@ -155,7 +151,7 @@ void loop() {
   unsigned long end_time = 0;
   unsigned long delay_time = 0;
 
-  
+
   switch (current_state) {
     case CONTROLLER_FOLLOW_LINE:
       // Useful for testing odometry updates
@@ -195,14 +191,14 @@ void loop() {
         sparki.moveLeft(to_degrees(-b_err));
       pose_theta = atan2((double)(pose_y-dest_pose_y),(double)(pose_x - dest_pose_x));
       b_err = 0;
-      
+
       displayOdometry();
 
       sparki.moveForward(d_err * 100);
       pose_x = dest_pose_x;
       pose_y = dest_pose_y;
       d_err = 0;
-      
+
       displayOdometry();
 
       h_err = dest_pose_theta - pose_theta;
@@ -241,6 +237,3 @@ void loop() {
   else
     delay(10);
 }
-
-
-
