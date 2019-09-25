@@ -112,12 +112,8 @@ void updateOdometry() {
   float old_theta = pose_theta;
 
   //Update theta
-<<<<<<< HEAD
   pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) -
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000))) / AXLE_DIAMETER;
-=======
-  pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) - (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000))) / AXLE_DIAMETER;
->>>>>>> d1c40d73de0ba44ffa1183735f20def4c0ae72f9
 
   // Bound theta, not sure if this should be here
   if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
@@ -131,13 +127,9 @@ void updateOdometry() {
 
   // add y motion
   // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-<<<<<<< HEAD
   pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
-=======
-  pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) * ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) + (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
->>>>>>> d1c40d73de0ba44ffa1183735f20def4c0ae72f9
 }
 
 void updateErrors()
