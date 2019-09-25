@@ -129,6 +129,13 @@ void updateOdometry() {
   // if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
 }
 
+void updateErrors()
+{
+  d_err = sqrt(sq((pose_x - dest_pose_x))+sq((pose_y - dest_pose_y))); //distance error
+  b_err = atan2((dest_pose_y-pose_y),(dest_pose_x - pose_x)) - pose_theta; //bearing error
+  h_err = dest_pose_theta - pose_theta; // heading error (rad)
+}
+
 void displayOdometry() {
   sparki.clearLCD();
   sparki.print("X: ");
@@ -228,13 +235,15 @@ void loop() {
       break;
     case CONTROLLER_GOTO_POSITION_PART3:
       updateOdometry();
+      
       // TODO: Implement solution using motorRotate and proportional feedback controller.
       // sparki.motorRotate function calls for reference:
       //      sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
       //      sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
 
       // Calculate errors
-
+      updateErrors();
+      
       // If the heading error and distance error are within acceptable limits, then finish
       if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= SUCCESS_HEADING_ERROR)
       {
