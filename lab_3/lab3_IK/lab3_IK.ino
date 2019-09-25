@@ -86,7 +86,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.0,0.2, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.2,0.0, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -308,6 +308,7 @@ void loop() {
           sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
           sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
       }
+      break;
     }
 
   sparki.clearLCD();
