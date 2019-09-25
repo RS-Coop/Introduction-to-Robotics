@@ -107,10 +107,16 @@ void readSensors() {
 
 void updateOdometry() {
 
+  //Save old theta
   float old_theta = pose_theta;
 
+  //Update theta
   pose_theta += ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) -
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000))) / AXLE_DIAMETER;
+
+  // Bound theta, not sure if this should be here
+  if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
+  if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
 
   // add x distance to pose_x
   // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
@@ -123,10 +129,6 @@ void updateOdometry() {
   pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) *
     ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
     ((left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
-
-  // // Bound theta
-  // if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
-  // if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
 }
 
 void updateErrors()
@@ -235,7 +237,7 @@ void loop() {
       break;
     case CONTROLLER_GOTO_POSITION_PART3:
       updateOdometry();
-      
+
       // TODO: Implement solution using motorRotate and proportional feedback controller.
       // sparki.motorRotate function calls for reference:
       //      sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
@@ -243,7 +245,7 @@ void loop() {
 
       // Calculate errors
       updateErrors();
-      
+
       // If the heading error and distance error are within acceptable limits, then finish
       if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= SUCCESS_HEADING_ERROR)
       {
