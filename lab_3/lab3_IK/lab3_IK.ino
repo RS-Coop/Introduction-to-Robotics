@@ -18,11 +18,11 @@
 #define DISTANCE_THREASHOLD 15
 
 // Coefficients for thresholding
-#define P1_OVER 1
+#define P1_OVER 1.
 #define P2_OVER .9
 #define P3_OVER .1
 
-#define P1_UNDER 15.0
+#define P1_UNDER 1.
 #define P2_UNDER .1
 #define P3_UNDER .9
 
@@ -44,7 +44,7 @@ int line_center = 1000;
 int line_right = 1000;
 
 // Controller and dTheta update rule settings
-/*const*/ int current_state = CONTROLLER_GOTO_POSITION_PART2;
+/*const*/ int current_state = CONTROLLER_GOTO_POSITION_PART3;
 int LAST_MOVEMENT = 0;
 
 // Odometry bookkeeping
@@ -86,7 +86,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.2,0.2, to_radians(180));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.2,0., to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -112,8 +112,7 @@ void updateOdometry() {
   float old_theta = pose_theta;
 
   //Update theta
-  pose_theta += ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) -
-    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000))) / AXLE_DIAMETER;
+  pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) - (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000))) / AXLE_DIAMETER;
 
   // Bound theta, not sure if this should be here
   if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
@@ -122,14 +121,12 @@ void updateOdometry() {
   // add x distance to pose_x
   // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
   pose_x += cos(abs(pose_theta-old_theta)/2.0) * (.5) *
-    ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
+    ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
 
   // add y motion
   // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-  pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) *
-    ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
-    ((left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
+  pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) * ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) + (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
 }
 
 void updateErrors()
