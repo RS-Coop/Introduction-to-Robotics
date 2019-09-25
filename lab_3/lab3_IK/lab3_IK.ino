@@ -15,15 +15,16 @@
 #define SUCCESS_HEADING_ERROR 1
 
 // Limits to qualify fixing bearing error
-#define FIX_BEARING_ERROR_DISTANCE 1
-#define FIX_BEARING_ERROR_BEARING 1
+#define DISTANCE_THREASHOLD 15
 
-// Limits to qualify fixing distance error
-#define FIX_DISTANCE_ERROR_DISTANCE 1    
-// #define FIX_DISTANCE_ERROR_BEARING 1     // These are the same values as above?
+// Coefficients for thresholding
+#define P1_OVER 1
+#define P2_OVER .9
+#define P3_OVER .1
 
-// Limits to qualify fixing heading error
-#define FIX_HEADING_ERROR_DISTANCE 1
+#define P1_UNDER 15.0
+#define P2_UNDER .1
+#define P3_UNDER .9
 
 #define FWD 1
 #define NONE 0
@@ -164,7 +165,7 @@ void displayOdometry() {
 }
 
 void loop() {
-  unsigned long begin_time = millis();
+  unsigned long begin_time;
   unsigned long end_time = 0;
   unsigned long delay_time = 0;
 
@@ -245,38 +246,72 @@ void loop() {
 
       // Calculate errors
 
+
       // If the heading error and distance error are within acceptable limits, then finish
       if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= SUCCESS_HEADING_ERROR)
       {
-          // Start millis counter
-          
-          // Run motors at percentage towards destination
+          current_state = 0;
       }
-      // If the distance error is greater than a certain limit and the bearing error is greater than a certain limit, care only about fixing bearing error
-      else if (d_err >= FIX_BEARING_ERROR_DISTANCE && b_err >= FIX_BEARING_ERROR_BEARING)
+      // If the distance error is greater than a certain limit, emphasize fixing bearing error
+      else if (d_err >= DISTANCE_THREASHOLD)
       {
-          // Start millis counter
-          
-          // Run motors at percentage towards destination
-      }
-      // If the bearing error is smaller than a certain limit, care about distance error
-      else if (d_err >= FIX_DISTANCE_ERROR_DISTANCE && b_err < FIX_BEARING_ERROR_BEARING)
-      {
-          // Start millis counter
-          
-          // Run motors at percentage towards destination
-      }
-      // If the distance error is smaller than a certain limit, care about heading error only
-      else if (d_err < FIX_HEADING_ERROR_DISTANCE)
-      {
-          // Start millis counter
-          
-          // Run motors at percentage towards destination
-      }
-      
+          //Calculate percentage rates to spin wheeles
+          float xDot = P1_OVER * d_err;
+          float thetaDot = P2_OVER * h_err + P3_OVER * b_err;
 
-      begin_time = millis();
-  }
+          float phi_l = ((2 * (xDot / WHEEL_RADIUS) - thetaDot * AXLE_DIAMETER) / 2);
+          float phi_r = ((2 * (xDot / WHEEL_RADIUS) + thetaDot * AXLE_DIAMETER) / 2);
+
+          if (phi_l >= phi_r) 
+          {
+            left_speed_pct = 1;
+            right_speed_pct = phi_r / phi_l;
+          }
+          else 
+          {
+            left_speed_pct = phi_l / phi_r;
+            right_speed_pct = 1;
+          }
+
+          // Start millis counter
+          begin_time = millis();
+          // Run motors at percentage towards destination
+          sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
+          sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
+      }
+      // If the distance is smaller than a certain limit, emphasize fixing heading error
+      else if (d_err < DISTANCE_THREASHOLD)
+      {
+        //Calculate percentage rates to spin wheeles
+          float xDot = P1_UNDER * d_err;
+          float thetaDot = P2_UNDER * h_err + P3_UNDER * b_err;
+
+          float phi_l = ((2 * (xDot / WHEEL_RADIUS) - thetaDot * AXLE_DIAMETER) / 2);
+          float phi_r = ((2 * (xDot / WHEEL_RADIUS) + thetaDot * AXLE_DIAMETER) / 2);
+
+          if (phi_l >= phi_r) 
+          {
+            left_speed_pct = 1;
+            right_speed_pct = phi_r / phi_l;
+          }
+          else 
+          {
+            left_speed_pct = phi_l / phi_r;
+            right_speed_pct = 1;
+          }
+
+          // Start millis counter
+          begin_time = millis();
+          // Run motors at percentage towards destination
+          sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
+          sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
+          
+          // Start millis counter
+          begin_time = millis();
+          // Run motors at percentage towards destination
+
+      }
+    }
 
   sparki.clearLCD();
   displayOdometry();
@@ -292,4 +327,6 @@ void loop() {
   else
     delay(10);
 }
+
+
 
