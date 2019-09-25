@@ -161,6 +161,7 @@ void displayOdometry() {
   sparki.print("phl: "); sparki.print(phi_l); sparki.print(" phr: "); sparki.println(phi_r);
   sparki.print("p: "); sparki.print(d_err); sparki.print(" a: "); sparki.println(to_degrees(b_err));
   sparki.print("h: "); sparki.println(to_degrees(h_err));
+  sparki.print("l%"); sparki.print(left_speed_pct); sparki.print("r%"); sparki.println(to_degrees(right_speed_pct));
 }
 
 void loop() {
@@ -325,3 +326,4 @@ void loop() {
   else
     delay(10);
 }
+
