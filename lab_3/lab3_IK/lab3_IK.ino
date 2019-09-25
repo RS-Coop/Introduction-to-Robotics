@@ -107,37 +107,36 @@ void readSensors() {
 
 
 void updateOdometry() {
-  // TODO: Update pose_x, pose_y, pose_theta
-  switch (LAST_MOVEMENT) {
-    // case: was forward
-    case FORWARD:
-      // add x distance to pose_x
-      // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-      pose_x += cos(pose_theta) * ROBOT_SPEED * CYCLE_TIME / (1000);
 
-      // add y motion
-      // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-      pose_y += sin(pose_theta) * ROBOT_SPEED * CYCLE_TIME / (1000);
-      break;
-    // case: was moveLeft
-    case LEFT:
-      pose_theta += 2*(ROBOT_SPEED*0.1)/AXLE_DIAMETER;
-      break;
-    // case: was moveRight
-    case RIGHT:
-      pose_theta -= 2*(ROBOT_SPEED*0.1)/AXLE_DIAMETER;
-      break;
-    case ORIGIN:
-      // Un-comment to see without loop closure.
-      pose_x = 0;
-      pose_y = 0;
-      pose_theta = 0;
-    default:
-      break;
-  }
-  // Bound theta
+  //Save old theta
+  float old_theta = pose_theta;
+
+  //Update theta
+  pose_theta += ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) -
+    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000))) / AXLE_DIAMETER;
+
+  // Bound theta, not sure if this should be here
   if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
   if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
+
+  // add x distance to pose_x
+  // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
+  pose_x += cos(abs(pose_theta-old_theta)/2.0) * (.5) *
+    ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
+    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
+
+  // add y motion
+  // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
+  pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) *
+    ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
+    ((left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
+}
+
+void updateErrors()
+{
+  d_err = sqrt(sq((pose_x - dest_pose_x))+sq((pose_y - dest_pose_y))); //distance error
+  b_err = atan2((dest_pose_y-pose_y),(dest_pose_x - pose_x)) - pose_theta; //bearing error
+  h_err = dest_pose_theta - pose_theta; // heading error (rad)
 }
 
 void displayOdometry() {
@@ -239,12 +238,14 @@ void loop() {
       break;
     case CONTROLLER_GOTO_POSITION_PART3:
       updateOdometry();
+
       // TODO: Implement solution using motorRotate and proportional feedback controller.
       // sparki.motorRotate function calls for reference:
       //      sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
       //      sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
 
       // Calculate errors
+      updateErrors();
 
 
       // If the heading error and distance error are within acceptable limits, then finish
@@ -275,6 +276,7 @@ void loop() {
 
           // Start millis counter
           begin_time = millis();
+
           // Run motors at percentage towards destination
           sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
           sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
@@ -305,11 +307,6 @@ void loop() {
           // Run motors at percentage towards destination
           sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
           sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
-          
-          // Start millis counter
-          begin_time = millis();
-          // Run motors at percentage towards destination
-
       }
     }
 
@@ -327,6 +324,3 @@ void loop() {
   else
     delay(10);
 }
-
-
-
