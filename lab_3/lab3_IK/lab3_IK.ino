@@ -11,11 +11,11 @@
 #define CONTROLLER_GOTO_POSITION_PART3 3
 
 // Limits to qualify success
-#define SUCCESS_DISTANCE_ERROR 1
-#define SUCCESS_HEADING_ERROR 1
+#define SUCCESS_DISTANCE_ERROR .001 // meters
+#define SUCCESS_HEADING_ERROR .1  // degrees
 
 // Limits to qualify fixing bearing error
-#define DISTANCE_THREASHOLD 15
+#define DISTANCE_THREASHOLD .05 // meters
 
 // Coefficients for thresholding
 #define P1_OVER 1.
@@ -161,7 +161,7 @@ void displayOdometry() {
 }
 
 void loop() {
-  unsigned long begin_time;
+  unsigned long begin_time = millis();
   unsigned long end_time = 0;
   unsigned long delay_time = 0;
 
@@ -246,7 +246,7 @@ void loop() {
 
 
       // If the heading error and distance error are within acceptable limits, then finish
-      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= SUCCESS_HEADING_ERROR)
+      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= to_radians(SUCCESS_HEADING_ERROR))
       {
           current_state = 0;
       }
