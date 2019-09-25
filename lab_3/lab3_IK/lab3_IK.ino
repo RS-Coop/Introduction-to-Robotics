@@ -19,7 +19,7 @@
 #define FIX_BEARING_ERROR_BEARING 1
 
 // Limits to qualify fixing distance error
-#define FIX_DISTANCE_ERROR_DISTANCE 1    
+#define FIX_DISTANCE_ERROR_DISTANCE 1
 // #define FIX_DISTANCE_ERROR_BEARING 1     // These are the same values as above?
 
 // Limits to qualify fixing heading error
@@ -106,37 +106,27 @@ void readSensors() {
 
 
 void updateOdometry() {
-  // TODO: Update pose_x, pose_y, pose_theta
-  switch (LAST_MOVEMENT) {
-    // case: was forward
-    case FORWARD:
-      // add x distance to pose_x
-      // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-      pose_x += cos(pose_theta) * ROBOT_SPEED * CYCLE_TIME / (1000);
 
-      // add y motion
-      // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-      pose_y += sin(pose_theta) * ROBOT_SPEED * CYCLE_TIME / (1000);
-      break;
-    // case: was moveLeft
-    case LEFT:
-      pose_theta += 2*(ROBOT_SPEED*0.1)/AXLE_DIAMETER;
-      break;
-    // case: was moveRight
-    case RIGHT:
-      pose_theta -= 2*(ROBOT_SPEED*0.1)/AXLE_DIAMETER;
-      break;
-    case ORIGIN:
-      // Un-comment to see without loop closure.
-      pose_x = 0;
-      pose_y = 0;
-      pose_theta = 0;
-    default:
-      break;
-  }
-  // Bound theta
-  if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
-  if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
+  float old_theta = pose_theta;
+
+  pose_theta += ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) -
+    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000))) / AXLE_DIAMETER;
+
+  // add x distance to pose_x
+  // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
+  pose_x += cos(abs(pose_theta-old_theta)/2.0) * (.5) *
+    ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
+    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
+
+  // add y motion
+  // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
+  pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) *
+    ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
+    ((left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
+
+  // // Bound theta
+  // if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
+  // if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
 }
 
 void displayOdometry() {
@@ -249,31 +239,31 @@ void loop() {
       if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= SUCCESS_HEADING_ERROR)
       {
           // Start millis counter
-          
+
           // Run motors at percentage towards destination
       }
       // If the distance error is greater than a certain limit and the bearing error is greater than a certain limit, care only about fixing bearing error
       else if (d_err >= FIX_BEARING_ERROR_DISTANCE && b_err >= FIX_BEARING_ERROR_BEARING)
       {
           // Start millis counter
-          
+
           // Run motors at percentage towards destination
       }
       // If the bearing error is smaller than a certain limit, care about distance error
       else if (d_err >= FIX_DISTANCE_ERROR_DISTANCE && b_err < FIX_BEARING_ERROR_BEARING)
       {
           // Start millis counter
-          
+
           // Run motors at percentage towards destination
       }
       // If the distance error is smaller than a certain limit, care about heading error only
       else if (d_err < FIX_HEADING_ERROR_DISTANCE)
       {
           // Start millis counter
-          
+
           // Run motors at percentage towards destination
       }
-      
+
 
       begin_time = millis();
   }
@@ -292,4 +282,3 @@ void loop() {
   else
     delay(10);
 }
-
