@@ -10,6 +10,21 @@
 #define CONTROLLER_GOTO_POSITION_PART2 2
 #define CONTROLLER_GOTO_POSITION_PART3 3
 
+// Limits to qualify success
+#define SUCCESS_DISTANCE_ERROR 1
+#define SUCCESS_HEADING_ERROR 1
+
+// Limits to qualify fixing bearing error
+#define FIX_BEARING_ERROR_DISTANCE 1
+#define FIX_BEARING_ERROR_BEARING 1
+
+// Limits to qualify fixing distance error
+#define FIX_DISTANCE_ERROR_DISTANCE 1    
+// #define FIX_DISTANCE_ERROR_BEARING 1     // These are the same values as above?
+
+// Limits to qualify fixing heading error
+#define FIX_HEADING_ERROR_DISTANCE 1
+
 #define FWD 1
 #define NONE 0
 #define BCK -1
@@ -228,6 +243,28 @@ void loop() {
       //      sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
       //      sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
 
+      // If the heading error and distance error are within acceptable limits, then finish
+      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= SUCCESS_HEADING_ERROR)
+      {
+
+      }
+      // If the distance error is greater than a certain limit and the bearing error is greater than a certain limit, care only about fixing bearing error
+      else if (d_err >= FIX_BEARING_ERROR_DISTANCE && b_err >= FIX_BEARING_ERROR_BEARING)
+      {
+
+      }
+      // If the bearing error is smaller than a certain limit, care about distance error
+      else if (d_err >= FIX_DISTANCE_ERROR_DISTANCE && b_err < FIX_BEARING_ERROR_BEARING)
+      {
+        
+      }
+      // If the distance error is smaller than a certain limit, care about heading error only
+      else if (d_err < FIX_HEADING_ERROR_DISTANCE)
+      {
+        
+      }
+      
+
       begin_time = millis();
   }
 
@@ -242,3 +279,4 @@ void loop() {
   else
     delay(10);
 }
+
