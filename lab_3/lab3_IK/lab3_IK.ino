@@ -44,7 +44,7 @@ int line_center = 1000;
 int line_right = 1000;
 
 // Controller and dTheta update rule settings
-/*const*/ int current_state = CONTROLLER_GOTO_POSITION_PART2;
+/*const*/ int current_state = CONTROLLER_GOTO_POSITION_PART3;
 int LAST_MOVEMENT = 0;
 
 // Odometry bookkeeping
@@ -112,7 +112,7 @@ void updateOdometry() {
   float old_theta = pose_theta;
 
   //Update theta
-  pose_theta += ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) -
+  pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) -
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000))) / AXLE_DIAMETER;
 
   // Bound theta, not sure if this should be here
@@ -122,14 +122,14 @@ void updateOdometry() {
   // add x distance to pose_x
   // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
   pose_x += cos(abs(pose_theta-old_theta)/2.0) * (.5) *
-    ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
+    ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
 
   // add y motion
   // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
   pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) *
-    ((left_right_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
-    ((left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
+    ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
+    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
 }
 
 void updateErrors()
@@ -263,12 +263,12 @@ void loop() {
           float phi_l = ((2 * (xDot / WHEEL_RADIUS) - thetaDot * AXLE_DIAMETER) / 2);
           float phi_r = ((2 * (xDot / WHEEL_RADIUS) + thetaDot * AXLE_DIAMETER) / 2);
 
-          if (phi_l >= phi_r) 
+          if (phi_l >= phi_r)
           {
             left_speed_pct = 1;
             right_speed_pct = phi_r / phi_l;
           }
-          else 
+          else
           {
             left_speed_pct = phi_l / phi_r;
             right_speed_pct = 1;
@@ -291,12 +291,12 @@ void loop() {
           float phi_l = ((2 * (xDot / WHEEL_RADIUS) - thetaDot * AXLE_DIAMETER) / 2);
           float phi_r = ((2 * (xDot / WHEEL_RADIUS) + thetaDot * AXLE_DIAMETER) / 2);
 
-          if (phi_l >= phi_r) 
+          if (phi_l >= phi_r)
           {
             left_speed_pct = 1;
             right_speed_pct = phi_r / phi_l;
           }
-          else 
+          else
           {
             left_speed_pct = phi_l / phi_r;
             right_speed_pct = 1;
