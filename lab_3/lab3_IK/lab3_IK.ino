@@ -11,18 +11,18 @@
 #define CONTROLLER_GOTO_POSITION_PART3 3
 
 // Limits to qualify success
-#define SUCCESS_DISTANCE_ERROR 1
-#define SUCCESS_HEADING_ERROR 1
+#define SUCCESS_DISTANCE_ERROR .001 // meters
+#define SUCCESS_HEADING_ERROR .1  // degrees
 
 // Limits to qualify fixing bearing error
-#define DISTANCE_THREASHOLD 15
+#define DISTANCE_THREASHOLD .05 // meters
 
 // Coefficients for thresholding
-#define P1_OVER 1
+#define P1_OVER 1.
 #define P2_OVER .9
 #define P3_OVER .1
 
-#define P1_UNDER 15.0
+#define P1_UNDER 1.
 #define P2_UNDER .1
 #define P3_UNDER .9
 
@@ -86,7 +86,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.0,0.5, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.0,0.2, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -112,8 +112,12 @@ void updateOdometry() {
   float old_theta = pose_theta;
 
   //Update theta
+<<<<<<< HEAD
   pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) -
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000))) / AXLE_DIAMETER;
+=======
+  pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) - (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000))) / AXLE_DIAMETER;
+>>>>>>> d1c40d73de0ba44ffa1183735f20def4c0ae72f9
 
   // Bound theta, not sure if this should be here
   if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
@@ -127,9 +131,13 @@ void updateOdometry() {
 
   // add y motion
   // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
+<<<<<<< HEAD
   pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
+=======
+  pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) * ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) + (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
+>>>>>>> d1c40d73de0ba44ffa1183735f20def4c0ae72f9
 }
 
 void updateErrors()
@@ -164,7 +172,7 @@ void displayOdometry() {
 }
 
 void loop() {
-  unsigned long begin_time;
+  unsigned long begin_time = millis();
   unsigned long end_time = 0;
   unsigned long delay_time = 0;
 
@@ -249,7 +257,7 @@ void loop() {
 
 
       // If the heading error and distance error are within acceptable limits, then finish
-      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= SUCCESS_HEADING_ERROR)
+      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= to_radians(SUCCESS_HEADING_ERROR))
       {
           current_state = 0;
       }
