@@ -20,11 +20,11 @@
 // Coefficients for thresholding
 #define P1_OVER 1
 #define P2_OVER 0
-#define P3_OVER 100
+#define P3_OVER 1500
 
 #define P1_UNDER 1
 #define P2_UNDER 100
-#define P3_UNDER 0
+#define P3_UNDER 5
 
 #define FWD 1
 #define NONE 0
@@ -86,7 +86,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.2,0.2, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.1,0.1, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -121,13 +121,13 @@ void updateOdometry() {
 
   // add x distance to pose_x
   // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-  pose_x += cos(abs(pose_theta-old_theta)/2.0) * (.5) *
+  pose_x += cos(abs(pose_theta)/2.0) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
 
   // add y motion
   // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-  pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) *
+  pose_y += sin(abs(pose_theta)/2.0) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
 }
@@ -161,7 +161,8 @@ void displayOdometry() {
   sparki.print("phl: "); sparki.print(phi_l); sparki.print(" phr: "); sparki.println(phi_r);
   sparki.print("p: "); sparki.print(d_err); sparki.print(" a: "); sparki.println(to_degrees(b_err));
   sparki.print("h: "); sparki.println(to_degrees(h_err));
-  sparki.print("l%"); sparki.print(left_speed_pct); sparki.print("r%"); sparki.println(right_speed_pct);
+//  sparki.print("l%"); sparki.print(left_speed_pct); sparki.print("r%"); sparki.println(right_speed_pct);
+  sparki.updateLCD();
 }
 
 void loop() {
@@ -259,11 +260,11 @@ void loop() {
       else if (d_err >= DISTANCE_THREASHOLD)
       {
           //Calculate percentage rates to spin wheeles
-          float xDot = P1_OVER * d_err;
-          float thetaDot = P2_OVER * h_err + P3_OVER * b_err;
+          dX = P1_OVER * d_err;
+          dTheta = P2_OVER * h_err + P3_OVER * b_err;
 
-          float phi_l = ((2 * (xDot / WHEEL_RADIUS) - thetaDot * AXLE_DIAMETER) / 2);
-          float phi_r = ((2 * (xDot / WHEEL_RADIUS) + thetaDot * AXLE_DIAMETER) / 2);
+          float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
+          float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
 
           if (phi_l >= phi_r)
           {
@@ -287,22 +288,25 @@ void loop() {
       else if (d_err < DISTANCE_THREASHOLD)
       {
         //Calculate percentage rates to spin wheeles
-          float xDot = P1_UNDER * d_err;
-          float thetaDot = P2_UNDER * h_err + P3_UNDER * b_err;
+//          dX = P1_UNDER * d_err;
+//          dTheta = P2_UNDER * h_err + P3_UNDER * b_err;
+//
+//          float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
+//          float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
+//
+//          if (phi_l >= phi_r)
+//          {
+//            left_speed_pct = 1;
+//            right_speed_pct = phi_r / phi_l;
+//          }
+//          else
+//          {
+//            left_speed_pct = phi_l / phi_r;
+//            right_speed_pct = 1;
+//          }
 
-          float phi_l = ((2 * (xDot / WHEEL_RADIUS) - thetaDot * AXLE_DIAMETER) / 2);
-          float phi_r = ((2 * (xDot / WHEEL_RADIUS) + thetaDot * AXLE_DIAMETER) / 2);
-
-          if (phi_l >= phi_r)
-          {
-            left_speed_pct = 1;
-            right_speed_pct = phi_r / phi_l;
-          }
-          else
-          {
-            left_speed_pct = phi_l / phi_r;
-            right_speed_pct = 1;
-          }
+          left_speed_pct = 0;
+          right_speed_pct = 0;
 
           // Start millis counter
           begin_time = millis();
@@ -313,11 +317,8 @@ void loop() {
       break;
     }
 
-  sparki.clearLCD();
-  displayOdometry();
-  sparki.updateLCD();
-
   end_time = millis();
+  displayOdometry();
 
   // Stop sparki
   //sparki.moveStop();
