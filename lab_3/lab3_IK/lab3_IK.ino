@@ -19,12 +19,12 @@
 
 // Coefficients for thresholding
 #define P1_OVER 1
-#define P2_OVER 1
-#define P3_OVER 0.1
+#define P2_OVER 0
+#define P3_OVER 100
 
-#define P1_UNDER .5
-#define P2_UNDER 0.1
-#define P3_UNDER 1
+#define P1_UNDER 1
+#define P2_UNDER 100
+#define P3_UNDER 0
 
 #define FWD 1
 #define NONE 0
