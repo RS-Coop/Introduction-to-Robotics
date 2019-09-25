@@ -18,13 +18,19 @@
 #define DISTANCE_THREASHOLD .05 // meters
 
 // Coefficients for thresholding
-#define P1_OVER 1
+// Best: .1
+#define P1_OVER .1
+// Best: 0
 #define P2_OVER 0
-#define P3_OVER 1500
+// Best: 20
+#define P3_OVER 20
 
-#define P1_UNDER 1
-#define P2_UNDER 100
-#define P3_UNDER 5
+// Best: 
+#define P1_UNDER .1
+// Best: 
+#define P2_UNDER 20
+// Best: 
+#define P3_UNDER 0
 
 #define FWD 1
 #define NONE 0
@@ -86,7 +92,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.1,0.1, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.1,0.01, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -161,7 +167,7 @@ void displayOdometry() {
   sparki.print("phl: "); sparki.print(phi_l); sparki.print(" phr: "); sparki.println(phi_r);
   sparki.print("p: "); sparki.print(d_err); sparki.print(" a: "); sparki.println(to_degrees(b_err));
   sparki.print("h: "); sparki.println(to_degrees(h_err));
-//  sparki.print("l%"); sparki.print(left_speed_pct); sparki.print("r%"); sparki.println(right_speed_pct);
+  sparki.print("l%"); sparki.print(left_speed_pct); sparki.print("r%"); sparki.println(right_speed_pct);
   sparki.updateLCD();
 }
 
@@ -240,6 +246,7 @@ void loop() {
       break;
     case CONTROLLER_GOTO_POSITION_PART3:
       updateOdometry();
+      displayOdometry();
 
       // TODO: Implement solution using motorRotate and proportional feedback controller.
       // sparki.motorRotate function calls for reference:
@@ -253,7 +260,6 @@ void loop() {
       // If the heading error and distance error are within acceptable limits, then finish
       if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= to_radians(SUCCESS_HEADING_ERROR))
       {
-          sparki.moveStop();
           current_state = 0;
       }
       // If the distance error is greater than a certain limit, emphasize fixing bearing error
@@ -288,25 +294,22 @@ void loop() {
       else if (d_err < DISTANCE_THREASHOLD)
       {
         //Calculate percentage rates to spin wheeles
-//          dX = P1_UNDER * d_err;
-//          dTheta = P2_UNDER * h_err + P3_UNDER * b_err;
-//
-//          float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
-//          float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
-//
-//          if (phi_l >= phi_r)
-//          {
-//            left_speed_pct = 1;
-//            right_speed_pct = phi_r / phi_l;
-//          }
-//          else
-//          {
-//            left_speed_pct = phi_l / phi_r;
-//            right_speed_pct = 1;
-//          }
+          dX = P1_UNDER * d_err;
+          dTheta = P2_UNDER * h_err + P3_UNDER * b_err;
 
-          left_speed_pct = 0;
-          right_speed_pct = 0;
+          float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
+          float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
+
+          if (phi_l >= phi_r)
+          {
+            left_speed_pct = 1;
+            right_speed_pct = phi_r / phi_l;
+          }
+          else
+          {
+            left_speed_pct = phi_l / phi_r;
+            right_speed_pct = 1;
+          }
 
           // Start millis counter
           begin_time = millis();
@@ -315,10 +318,14 @@ void loop() {
           sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
       }
       break;
+   case 0:
+      sparki.moveStop();
+      sparki.clearLCD();
+      sparki.print("DONE");
+      sparki.updateLCD();
     }
 
   end_time = millis();
-  displayOdometry();
 
   // Stop sparki
   //sparki.moveStop();
