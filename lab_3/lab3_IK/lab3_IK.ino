@@ -18,13 +18,13 @@
 #define DISTANCE_THREASHOLD .05 // meters
 
 // Coefficients for thresholding
-#define P1_OVER 1.
-#define P2_OVER .9
-#define P3_OVER .1
+#define P1_OVER 1
+#define P2_OVER 1
+#define P3_OVER 0.1
 
-#define P1_UNDER 1.
-#define P2_UNDER .1
-#define P3_UNDER .9
+#define P1_UNDER .5
+#define P2_UNDER 0.1
+#define P3_UNDER 1
 
 #define FWD 1
 #define NONE 0
@@ -86,7 +86,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.2,0.0, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.2,0.2, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -112,8 +112,8 @@ void updateOdometry() {
   float old_theta = pose_theta;
 
   //Update theta
-  pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) -
-    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000))) / AXLE_DIAMETER;
+  pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) -
+    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME)) / AXLE_DIAMETER;
 
   // Bound theta, not sure if this should be here
   if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
@@ -122,14 +122,14 @@ void updateOdometry() {
   // add x distance to pose_x
   // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
   pose_x += cos(abs(pose_theta-old_theta)/2.0) * (.5) *
-    ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
-    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
+    ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
+    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
 
   // add y motion
   // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
   pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) *
-    ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)) +
-    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME / (1000)));
+    ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
+    (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
 }
 
 void updateErrors()
@@ -161,7 +161,7 @@ void displayOdometry() {
   sparki.print("phl: "); sparki.print(phi_l); sparki.print(" phr: "); sparki.println(phi_r);
   sparki.print("p: "); sparki.print(d_err); sparki.print(" a: "); sparki.println(to_degrees(b_err));
   sparki.print("h: "); sparki.println(to_degrees(h_err));
-  sparki.print("l%"); sparki.print(left_speed_pct); sparki.print("r%"); sparki.println(to_degrees(right_speed_pct));
+  sparki.print("l%"); sparki.print(left_speed_pct); sparki.print("r%"); sparki.println(right_speed_pct);
 }
 
 void loop() {
@@ -252,6 +252,7 @@ void loop() {
       // If the heading error and distance error are within acceptable limits, then finish
       if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= to_radians(SUCCESS_HEADING_ERROR))
       {
+          sparki.moveStop();
           current_state = 0;
       }
       // If the distance error is greater than a certain limit, emphasize fixing bearing error
@@ -319,6 +320,7 @@ void loop() {
   end_time = millis();
 
   // Stop sparki
+  //sparki.moveStop();
 
   delay_time = end_time - begin_time;
   if (delay_time < 1000*CYCLE_TIME)
@@ -326,4 +328,3 @@ void loop() {
   else
     delay(10);
 }
-
