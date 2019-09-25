@@ -243,25 +243,35 @@ void loop() {
       //      sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
       //      sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
 
+      // Calculate errors
+
       // If the heading error and distance error are within acceptable limits, then finish
       if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= SUCCESS_HEADING_ERROR)
       {
-
+          // Start millis counter
+          
+          // Run motors at percentage towards destination
       }
       // If the distance error is greater than a certain limit and the bearing error is greater than a certain limit, care only about fixing bearing error
       else if (d_err >= FIX_BEARING_ERROR_DISTANCE && b_err >= FIX_BEARING_ERROR_BEARING)
       {
-
+          // Start millis counter
+          
+          // Run motors at percentage towards destination
       }
       // If the bearing error is smaller than a certain limit, care about distance error
       else if (d_err >= FIX_DISTANCE_ERROR_DISTANCE && b_err < FIX_BEARING_ERROR_BEARING)
       {
-        
+          // Start millis counter
+          
+          // Run motors at percentage towards destination
       }
       // If the distance error is smaller than a certain limit, care about heading error only
       else if (d_err < FIX_HEADING_ERROR_DISTANCE)
       {
-        
+          // Start millis counter
+          
+          // Run motors at percentage towards destination
       }
       
 
@@ -273,6 +283,9 @@ void loop() {
   sparki.updateLCD();
 
   end_time = millis();
+
+  // Stop sparki
+
   delay_time = end_time - begin_time;
   if (delay_time < 1000*CYCLE_TIME)
     delay(1000*CYCLE_TIME - delay_time); // each loop takes CYCLE_TIME ms
