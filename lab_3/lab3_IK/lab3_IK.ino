@@ -139,6 +139,13 @@ void updateOdometry() {
   if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
 }
 
+void updateErrors()
+{
+  d_err = sqrt(sq((pose_x - dest_pose_x))+sq((pose_y - dest_pose_y))); //distance error
+  b_err = atan2((dest_pose_y-pose_y),(dest_pose_x - pose_x)) - pose_theta; //bearing error
+  h_err = dest_pose_theta - pose_theta; // heading error (rad)
+}
+
 void displayOdometry() {
   sparki.clearLCD();
   sparki.print("X: ");
