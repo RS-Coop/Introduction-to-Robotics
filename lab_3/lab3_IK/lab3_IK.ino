@@ -11,11 +11,12 @@
 #define CONTROLLER_GOTO_POSITION_PART3 3
 
 // Limits to qualify success
-#define SUCCESS_DISTANCE_ERROR .01 // meters
-#define SUCCESS_HEADING_ERROR .1  // degrees
+// 1 cm is precise for this robot, use 5 cm and 15 degrees
+#define SUCCESS_DISTANCE_ERROR .05 // meters
+#define SUCCESS_HEADING_ERROR 15  // degrees
 
 // Limits to qualify fixing bearing error
-#define DISTANCE_THREASHOLD .05 // meters
+#define DISTANCE_THREASHOLD .07 // meters
 
 // Coefficients for thresholding
 // Best: .1
