@@ -11,7 +11,7 @@
 #define CONTROLLER_GOTO_POSITION_PART3 3
 
 // Limits to qualify success
-#define SUCCESS_DISTANCE_ERROR .001 // meters
+#define SUCCESS_DISTANCE_ERROR .01 // meters
 #define SUCCESS_HEADING_ERROR .1  // degrees
 
 // Limits to qualify fixing bearing error
@@ -21,7 +21,7 @@
 // Best: .1
 #define P1_OVER .1
 // Best: 0
-#define P2_OVER 20
+#define P2_OVER 1
 // Best: 20
 #define P3_OVER 0
 
@@ -30,7 +30,7 @@
 // Best:
 #define P2_UNDER 0
 // Best:
-#define P3_UNDER 20
+#define P3_UNDER 1
 
 #define FWD 1
 #define NONE 0
@@ -93,7 +93,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.1,0.1, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0,0.1, to_radians(90));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -123,13 +123,13 @@ void updateOdometry() {
 
   // add x distance to pose_x
   // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-  pose_x += cos(abs(pose_theta)/2.0) * (.5) *
+  pose_x += cos(pose_theta) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
 
   // add y motion
   // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-  pose_y += sin(abs(pose_theta)/2.0) * (.5) *
+  pose_y += sin(pose_theta) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
 
