@@ -261,7 +261,7 @@ void loop() {
 
 
       // If the heading error and distance error are within acceptable limits, then finish
-      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= abs(to_radians(SUCCESS_HEADING_ERROR)))
+      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= abs(toRadians(SUCCESS_HEADING_ERROR)))
       {
           current_state = 0;
       }
