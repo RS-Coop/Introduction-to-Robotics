@@ -21,16 +21,16 @@
 // Best: .1
 #define P1_OVER .1
 // Best: 0
-#define P2_OVER 0
+#define P2_OVER 20
 // Best: 20
-#define P3_OVER 20
+#define P3_OVER 0
 
-// Best: 
+// Best:
 #define P1_UNDER .1
-// Best: 
-#define P2_UNDER 20
-// Best: 
-#define P3_UNDER 0
+// Best:
+#define P2_UNDER 0
+// Best:
+#define P3_UNDER 20
 
 #define FWD 1
 #define NONE 0
@@ -73,6 +73,7 @@ int right_wheel_rotating = NONE;
 // and their respective feedback controller gains
 const float distance_gain = 1.;
 const float theta_gain = 1.;
+float heading_gain = 0;
 float dX  = 0., dTheta = 0.;
 
 float to_radians(double deg) {
@@ -121,21 +122,21 @@ void updateOdometry() {
   pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) -
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME)) / AXLE_DIAMETER;
 
-  // Bound theta, not sure if this should be here
-  if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
-  if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
-
   // add x distance to pose_x
   // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-  pose_x += cos(abs(pose_theta)/2.0) * (.5) *
+  pose_x += cos(abs(pose_theta-old_theta)/2.0) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
 
   // add y motion
   // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-  pose_y += sin(abs(pose_theta)/2.0) * (.5) *
+  pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
+
+  // Bound theta, not sure if this should be here
+  if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
+  if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
 }
 
 void updateErrors()
@@ -255,6 +256,8 @@ void loop() {
 
       // Calculate errors
       updateErrors();
+      //I think we can just calculate the gains here.
+      heading_gain = distance_gain/d_err;
 
 
       // If the heading error and distance error are within acceptable limits, then finish
@@ -267,10 +270,12 @@ void loop() {
       {
           //Calculate percentage rates to spin wheeles
           dX = P1_OVER * d_err;
-          dTheta = P2_OVER * h_err + P3_OVER * b_err;
+          dTheta = P2_OVER * b_err + P3_OVER * h_err;
 
-          float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
-          float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
+          //I think we need to bound Xr.
+
+          float phi_l = ((2*dX) - (dTheta*AXLE_DIAMETER))/(2*WHEEL_RADIUS);
+          float phi_r = ((2*dX) + (dTheta*AXLE_DIAMETER))/(2*WHEEL_RADIUS);
 
           if (phi_l >= phi_r)
           {
@@ -287,8 +292,8 @@ void loop() {
           begin_time = millis();
 
           // Run motors at percentage towards destination
-          sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
-          sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
+          sparki.motorRotate(MOTOR_LEFT, left_dir, abs(int(left_speed_pct*100.)));
+          sparki.motorRotate(MOTOR_RIGHT, right_dir, abs(int(right_speed_pct*100.)));
       }
       // If the distance is smaller than a certain limit, emphasize fixing heading error
       else if (d_err < DISTANCE_THREASHOLD)
