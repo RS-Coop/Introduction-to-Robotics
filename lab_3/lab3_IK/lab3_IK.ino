@@ -26,7 +26,7 @@
 #define P3_OVER 0
 
 // Best:
-#define P1_UNDER .1
+#define P1_UNDER .01
 // Best:
 #define P2_UNDER 0
 // Best:
@@ -93,7 +93,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0,0.1, to_radians(90));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0,0.2, to_radians(90));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -261,7 +261,7 @@ void loop() {
 
 
       // If the heading error and distance error are within acceptable limits, then finish
-      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= to_radians(SUCCESS_HEADING_ERROR))
+      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= abs(to_radians(SUCCESS_HEADING_ERROR)))
       {
           current_state = 0;
       }
