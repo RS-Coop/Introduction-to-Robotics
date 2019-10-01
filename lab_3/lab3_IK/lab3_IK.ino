@@ -93,7 +93,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.1,0.1, to_radians(M_PI/2));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(-0.1,0.0, to_radians(M_PI));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -121,10 +121,6 @@ void updateOdometry() {
   pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) -
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME)) / AXLE_DIAMETER;
 
-  // Bound theta, not sure if this should be here
-  if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
-  if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
-
   // add x distance to pose_x
   // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
   pose_x += cos(abs(pose_theta)/2.0) * (.5) *
@@ -136,6 +132,11 @@ void updateOdometry() {
   pose_y += sin(abs(pose_theta)/2.0) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
+
+    // Bound theta, not sure if this should be here
+  if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
+  if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
+
 }
 
 void updateErrors()
@@ -256,7 +257,7 @@ void loop() {
       // Calculate errors
       updateErrors();
       //I think we can just calculate the gains here.
-      heading_gain = distance_gain/d_err;
+      //heading_gain = distance_gain/d_err;
 
 
       // If the heading error and distance error are within acceptable limits, then finish
@@ -318,8 +319,8 @@ void loop() {
           // Start millis counter
           begin_time = millis();
           // Run motors at percentage towards destination
-          sparki.motorRotate(MOTOR_LEFT, left_dir, int(left_speed_pct*100.));
-          sparki.motorRotate(MOTOR_RIGHT, right_dir, int(right_speed_pct*100.));
+          sparki.motorRotate(MOTOR_LEFT, left_dir, abs(int(left_speed_pct*100.)));
+          sparki.motorRotate(MOTOR_RIGHT, right_dir, abs(int(right_speed_pct*100.)));
       }
       break;
    case 0:
