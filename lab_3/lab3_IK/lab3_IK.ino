@@ -93,7 +93,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.1,0.1, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.1,0.0, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -123,13 +123,13 @@ void updateOdometry() {
 
   // add x distance to pose_x
   // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-  pose_x += cos(abs(pose_theta)/2.0) * (.5) *
+  pose_x += cos(pose_theta) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
 
   // add y motion
   // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-  pose_y += sin(abs(pose_theta)/2.0) * (.5) *
+  pose_y += sin(pose_theta) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
 
@@ -303,7 +303,7 @@ void loop() {
         //Calculate percentage rates to spin wheeles
           dX = P1_UNDER * d_err;
           dTheta = P2_UNDER * b_err + P3_UNDER * h_err;
-
+ sparki.motorRotate(MOTOR, DIRECTION, SPEED)
           float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
           float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
 
@@ -317,6 +317,17 @@ void loop() {
             left_speed_pct = phi_l / phi_r;
             right_speed_pct = 1;
           }
+
+          //Accounting for wheels spinning backwards.
+          if(phi_l < 0)
+            left_dir = DIR_CW;
+          else
+            left_dir = DIR_CCW;
+
+          if(phi_r < 0)
+            right_dir = DIR_CCW;
+          else
+            right_dir = DIR_CW
 
           // Start millis counter
           begin_time = millis();
