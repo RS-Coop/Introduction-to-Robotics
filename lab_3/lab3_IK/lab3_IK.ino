@@ -19,18 +19,18 @@
 
 // Coefficients for thresholding
 // Best: .1
-#define P1_OVER .1
+#define P1_OVER .15
 // Best: 0
-#define P2_OVER 1
+#define P2_OVER .65
 // Best: 20
-#define P3_OVER 0
+#define P3_OVER .1
 
 // Best:
-#define P1_UNDER .01
+#define P1_UNDER .1
 // Best:
 #define P2_UNDER 0
 // Best:
-#define P3_UNDER 1
+#define P3_UNDER .9
 
 #define FWD 1
 #define NONE 0
@@ -290,6 +290,17 @@ void loop() {
             right_speed_pct = 1;
           }
 
+          //Accounting for wheels spinning backwards.
+          if(phi_l < 0)
+            left_dir = DIR_CW;
+          else
+            left_dir = DIR_CCW;
+
+          if(phi_r < 0)
+            right_dir = DIR_CCW;
+          else
+            right_dir = DIR_CW;
+
           // Start millis counter
           begin_time = millis();
 
@@ -303,7 +314,7 @@ void loop() {
         //Calculate percentage rates to spin wheeles
           dX = P1_UNDER * d_err;
           dTheta = P2_UNDER * b_err + P3_UNDER * h_err;
- sparki.motorRotate(MOTOR, DIRECTION, SPEED)
+//          sparki.motorRotate(MOTOR, DIRECTION, SPEED)
           float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
           float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
 
@@ -327,7 +338,7 @@ void loop() {
           if(phi_r < 0)
             right_dir = DIR_CCW;
           else
-            right_dir = DIR_CW
+            right_dir = DIR_CW;
 
           // Start millis counter
           begin_time = millis();
@@ -338,9 +349,9 @@ void loop() {
       break;
    case 0:
       sparki.moveStop();
-      sparki.clearLCD();
-      sparki.print("DONE");
-      sparki.updateLCD();
+//      sparki.clearLCD();
+//      sparki.print("DONE");
+//      sparki.updateLCD();
     }
 
   end_time = millis();
