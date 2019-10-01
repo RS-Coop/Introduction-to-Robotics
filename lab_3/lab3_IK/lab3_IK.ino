@@ -93,7 +93,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(-0.1,0.0, to_radians(M_PI));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.1,0.1, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -273,6 +273,8 @@ void loop() {
           dTheta = P2_OVER * b_err + P3_OVER * h_err;
 
           //I think we need to bound Xr.
+          if(dX >= 0.3)
+            dX = 0.3;
 
           float phi_l = ((2*dX) - (dTheta*AXLE_DIAMETER))/(2*WHEEL_RADIUS);
           float phi_r = ((2*dX) + (dTheta*AXLE_DIAMETER))/(2*WHEEL_RADIUS);
@@ -300,7 +302,7 @@ void loop() {
       {
         //Calculate percentage rates to spin wheeles
           dX = P1_UNDER * d_err;
-          dTheta = P2_UNDER * h_err + P3_UNDER * b_err;
+          dTheta = P2_UNDER * b_err + P3_UNDER * h_err;
 
           float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
           float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
