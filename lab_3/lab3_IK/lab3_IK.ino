@@ -114,7 +114,6 @@ void readSensors() {
 
 
 void updateOdometry() {
-
   //Save old theta
   float old_theta = pose_theta;
 
@@ -122,21 +121,21 @@ void updateOdometry() {
   pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) -
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME)) / AXLE_DIAMETER;
 
+  // Bound theta, not sure if this should be here
+  if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
+  if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
+
   // add x distance to pose_x
   // cos(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-  pose_x += cos(abs(pose_theta-old_theta)/2.0) * (.5) *
+  pose_x += cos(abs(pose_theta)/2.0) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
 
   // add y motion
   // sin(theta) * speed m/s * 100 ms * (1 s / 1000 ms)
-  pose_y += sin(abs(pose_theta-old_theta)/2.0) * (.5) *
+  pose_y += sin(abs(pose_theta)/2.0) * (.5) *
     ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) +
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
-
-  // Bound theta, not sure if this should be here
-  if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
-  if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
 }
 
 void updateErrors()
