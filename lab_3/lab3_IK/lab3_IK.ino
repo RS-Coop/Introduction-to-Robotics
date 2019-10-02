@@ -12,26 +12,26 @@
 
 // Limits to qualify success
 // 1 cm is precise for this robot, use 5 cm and 15 degrees
-#define SUCCESS_DISTANCE_ERROR .05 // meters
-#define SUCCESS_HEADING_ERROR 10  // degrees
+#define SUCCESS_DISTANCE_ERROR .07 // meters
+#define SUCCESS_HEADING_ERROR 15  // degrees
 
 // Limits to qualify fixing bearing error
-#define DISTANCE_THREASHOLD .07 // meters
+#define DISTANCE_THREASHOLD .05 // meters
 
 // Coefficients for thresholding
 // Best: .1
-#define P1_OVER .1
+#define P1_OVER 2
 // Best: 0
-#define P2_OVER .3
+#define P2_OVER 10
 // Best: 20
-#define P3_OVER .005
+#define P3_OVER .0
 
 // Best:
-#define P1_UNDER .1
+#define P1_UNDER 2
 // Best:
 #define P2_UNDER 0
 // Best:
-#define P3_UNDER .1
+#define P3_UNDER 10
 
 #define FWD 1
 #define NONE 0
@@ -115,8 +115,6 @@ void readSensors() {
 
 
 void updateOdometry() {
-  //Save old theta
-  float old_theta = pose_theta;
 
   //Update theta
   pose_theta += ((right_speed_pct * ROBOT_SPEED * CYCLE_TIME) -
@@ -135,8 +133,8 @@ void updateOdometry() {
     (left_speed_pct * ROBOT_SPEED * CYCLE_TIME));
 
     // Bound theta, not sure if this should be here
-  if (pose_theta > M_PI) pose_theta -= 2.*M_PI;
-  if (pose_theta <= -M_PI) pose_theta += 2.*M_PI;
+  if (pose_theta > M_PI + M_PI/2.) pose_theta -= 2.*M_PI;
+  if (pose_theta <= -M_PI-M_PI/2.) pose_theta += 2.*M_PI;
 
 }
 
@@ -145,23 +143,30 @@ void updateErrors()
   d_err = sqrt(sq((pose_x - dest_pose_x))+sq((pose_y - dest_pose_y))); //distance error
   b_err = atan2((dest_pose_y-pose_y),(dest_pose_x - pose_x)) - pose_theta; //bearing error
   h_err = dest_pose_theta - pose_theta; // heading error (rad)
+
+  if (b_err > M_PI + M_PI/2.) b_err -= 2.*M_PI;
+  if (b_err < -M_PI - M_PI/2.) b_err += 2.*M_PI;
+  //if (h_err > M_PI + M_PI/2.) h_err -= 2.*M_PI;
+  //if (h_err < -M_PI - M_PI/2.) h_err += 2.*M_PI;
+  if (h_err > 2*M_PI) h_err -= 2.*M_PI;
+  if (h_err < 0) h_err += 2.*M_PI;
+
 }
 
 void displayOdometry() {
   sparki.clearLCD();
-  sparki.print("X: ");
+/*  sparki.print("X: ");
   sparki.print(pose_x);
   sparki.print(" Xg: ");
   sparki.println(dest_pose_x);
   sparki.print("Y: ");
   sparki.print(pose_y);
   sparki.print(" Yg: ");
-  sparki.println(dest_pose_y);
+  sparki.println(dest_pose_y); */
   sparki.print("T: ");
   sparki.print(to_degrees(pose_theta));
   sparki.print(" Tg: ");
   sparki.println(to_degrees(dest_pose_theta));
-
   sparki.print("dX : ");
   sparki.print(dX );
   sparki.print("   dT: ");
@@ -169,7 +174,7 @@ void displayOdometry() {
   sparki.print("phl: "); sparki.print(phi_l); sparki.print(" phr: "); sparki.println(phi_r);
   sparki.print("p: "); sparki.print(d_err); sparki.print(" a: "); sparki.println(to_degrees(b_err));
   sparki.print("h: "); sparki.println(to_degrees(h_err));
-  sparki.print("l%"); sparki.print(left_speed_pct); sparki.print("r%"); sparki.println(right_speed_pct);
+//  sparki.print("l%"); sparki.print(left_speed_pct); sparki.print("r%"); sparki.println(right_speed_pct);
   sparki.updateLCD();
 }
 
@@ -278,7 +283,7 @@ void loop() {
       else
       {
           dX = P1_UNDER * d_err;
-          dTheta = P2_UNDER * b_err + P3_UNDER * h_err;
+          dTheta = h_err;// P2_UNDER * b_err + P3_UNDER * h_err;
       }
 
       //I think we need to bound Xr.
