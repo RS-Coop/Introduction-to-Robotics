@@ -315,11 +315,7 @@ void loop() {
         //Calculate percentage rates to spin wheeles
           dX = P1_UNDER * d_err;
           dTheta = P2_UNDER * b_err + P3_UNDER * h_err;
-<<<<<<< HEAD
 
-=======
-//          sparki.motorRotate(MOTOR, DIRECTION, SPEED)
->>>>>>> b4804b99c80878baac1cd02cb6ce1160aa9f725a
           float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
           float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
 
@@ -370,4 +366,3 @@ void loop() {
   else
     delay(10);
 }
-
