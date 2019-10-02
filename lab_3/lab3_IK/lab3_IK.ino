@@ -11,26 +11,27 @@
 #define CONTROLLER_GOTO_POSITION_PART3 3
 
 // Limits to qualify success
-#define SUCCESS_DISTANCE_ERROR .001 // meters
-#define SUCCESS_HEADING_ERROR .1  // degrees
+// 1 cm is precise for this robot, use 5 cm and 15 degrees
+#define SUCCESS_DISTANCE_ERROR .05 // meters
+#define SUCCESS_HEADING_ERROR 15  // degrees
 
 // Limits to qualify fixing bearing error
-#define DISTANCE_THREASHOLD .05 // meters
+#define DISTANCE_THREASHOLD .07 // meters
 
 // Coefficients for thresholding
 // Best: .1
-#define P1_OVER .1
+#define P1_OVER .15
 // Best: 0
-#define P2_OVER 20
+#define P2_OVER .65
 // Best: 20
-#define P3_OVER 0
+#define P3_OVER .1
 
 // Best:
 #define P1_UNDER .1
 // Best:
 #define P2_UNDER 0
 // Best:
-#define P3_UNDER 20
+#define P3_UNDER .9
 
 #define FWD 1
 #define NONE 0
@@ -93,7 +94,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0.1,0.0, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0,0.2, to_radians(90));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -261,7 +262,7 @@ void loop() {
 
 
       // If the heading error and distance error are within acceptable limits, then finish
-      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= to_radians(SUCCESS_HEADING_ERROR))
+      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= abs(toRadians(SUCCESS_HEADING_ERROR)))
       {
           current_state = 0;
       }
@@ -290,6 +291,17 @@ void loop() {
             right_speed_pct = 1;
           }
 
+          //Accounting for wheels spinning backwards.
+          if(phi_l < 0)
+            left_dir = DIR_CW;
+          else
+            left_dir = DIR_CCW;
+
+          if(phi_r < 0)
+            right_dir = DIR_CCW;
+          else
+            right_dir = DIR_CW;
+
           // Start millis counter
           begin_time = millis();
 
@@ -303,7 +315,11 @@ void loop() {
         //Calculate percentage rates to spin wheeles
           dX = P1_UNDER * d_err;
           dTheta = P2_UNDER * b_err + P3_UNDER * h_err;
+<<<<<<< HEAD
 
+=======
+//          sparki.motorRotate(MOTOR, DIRECTION, SPEED)
+>>>>>>> b4804b99c80878baac1cd02cb6ce1160aa9f725a
           float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
           float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
 
@@ -338,9 +354,9 @@ void loop() {
       break;
    case 0:
       sparki.moveStop();
-      sparki.clearLCD();
-      sparki.print("DONE");
-      sparki.updateLCD();
+//      sparki.clearLCD();
+//      sparki.print("DONE");
+//      sparki.updateLCD();
     }
 
   end_time = millis();
@@ -354,3 +370,4 @@ void loop() {
   else
     delay(10);
 }
+
