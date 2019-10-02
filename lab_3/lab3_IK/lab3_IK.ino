@@ -20,18 +20,18 @@
 
 // Coefficients for thresholding
 // Best: .1
-#define P1_OVER .15
+#define P1_OVER .1
 // Best: 0
-#define P2_OVER .65
+#define P2_OVER .3
 // Best: 20
-#define P3_OVER .1
+#define P3_OVER .01
 
 // Best:
 #define P1_UNDER .1
 // Best:
 #define P2_UNDER 0
 // Best:
-#define P3_UNDER .9
+#define P3_UNDER .1
 
 #define FWD 1
 #define NONE 0
@@ -67,8 +67,6 @@ float left_speed_pct = 0.;
 float right_speed_pct = 0.;
 int left_dir = DIR_CCW;
 int right_dir = DIR_CW;
-int left_sign = 1;
-int right_sign = 1;
 int left_wheel_rotating = NONE;
 int right_wheel_rotating = NONE;
 
@@ -264,117 +262,76 @@ void loop() {
 
 
       // If the heading error and distance error are within acceptable limits, then finish
-      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= abs(toRadians(SUCCESS_HEADING_ERROR)))
+      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= abs(to_radians(SUCCESS_HEADING_ERROR)))
       {
           current_state = 0;
       }
       // If the distance error is greater than a certain limit, emphasize fixing bearing error
-      else if (d_err >= DISTANCE_THREASHOLD)
+      if (d_err >= DISTANCE_THREASHOLD)
       {
           //Calculate percentage rates to spin wheeles
           dX = P1_OVER * d_err;
           dTheta = P2_OVER * b_err + P3_OVER * h_err;
-
-          //I think we need to bound Xr.
-          if(dX >= 0.3)
-            dX = 0.3;
-
-          float phi_l = ((2*dX) - (dTheta*AXLE_DIAMETER))/(2*WHEEL_RADIUS);
-          float phi_r = ((2*dX) + (dTheta*AXLE_DIAMETER))/(2*WHEEL_RADIUS);
-
-          if (phi_l >= phi_r)
-          {
-            left_speed_pct = 1;
-            right_speed_pct = phi_r / phi_l;
-          }
-          else
-          {
-            left_speed_pct = phi_l / phi_r;
-            right_speed_pct = 1;
-          }
-
-          //Accounting for wheels spinning backwards.
-          //I actually dont think the sign thing is neccesary.
-          if(phi_l < 0)
-          {
-            left_dir = DIR_CW;
-            left_sign = -1;
-          }
-          else
-          {
-            left_dir = DIR_CCW;
-            left_dir = 1;
-          }
-
-          if(phi_r < 0)
-          {
-            right_dir = DIR_CCW;
-            right_dir = -1;
-          }
-          else
-          {
-            right_dir = DIR_CW;
-            right_sign = 1;
-          }
-
-          // Start millis counter
-          begin_time = millis();
-
-          // Run motors at percentage towards destination
-          sparki.motorRotate(MOTOR_LEFT, left_dir, abs(int(left_speed_pct*100.)));
-          sparki.motorRotate(MOTOR_RIGHT, right_dir, abs(int(right_speed_pct*100.)));
       }
-      // If the distance is smaller than a certain limit, emphasize fixing heading error
-      else if (d_err < DISTANCE_THREASHOLD)
+      else
       {
-        //Calculate percentage rates to spin wheeles
           dX = P1_UNDER * d_err;
           dTheta = P2_UNDER * b_err + P3_UNDER * h_err;
-
-          float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
-          float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
-
-          if (phi_l >= phi_r)
-          {
-            left_speed_pct = 1;
-            right_speed_pct = phi_r / phi_l;
-          }
-          else
-          {
-            left_speed_pct = phi_l / phi_r;
-            right_speed_pct = 1;
-          }
-
-          //Accounting for wheels spinning backwards.
-          if(phi_l < 0)
-          {
-            left_dir = DIR_CW;
-            left_sign = -1;
-          }
-          else
-          {
-            left_dir = DIR_CCW;
-            left_dir = 1;
-          }
-
-          if(phi_r < 0)
-          {
-            right_dir = DIR_CCW;
-            right_dir = -1;
-          }
-          else
-          {
-            right_dir = DIR_CW;
-            right_sign = 1;
-          }
-
-          // Start millis counter
-          begin_time = millis();
-          // Run motors at percentage towards destination
-          sparki.motorRotate(MOTOR_LEFT, left_dir, abs(int(left_speed_pct*100.)));
-          sparki.motorRotate(MOTOR_RIGHT, right_dir, abs(int(right_speed_pct*100.)));
       }
-      break;
+
+      //I think we need to bound Xr.
+      if(dX >= 0.3)
+        dX = 0.3;
+
+      float phi_l = ((2*dX) - (dTheta*AXLE_DIAMETER))/(2*WHEEL_RADIUS);
+      float phi_r = ((2*dX) + (dTheta*AXLE_DIAMETER))/(2*WHEEL_RADIUS);
+
+      if(phi_l >= 0 && phi_r >= 0)
+      {
+        if (phi_l >= phi_r)
+        {
+          left_speed_pct = 1;
+          right_speed_pct = phi_r / phi_l;
+        }
+        else
+        {
+          left_speed_pct = phi_l / phi_r;
+          right_speed_pct = 1;
+        }
+      }
+      else
+      {
+        right_speed_pct = 1;
+        left_speed_pct = 1; 
+      }
+
+      //Accounting for wheels spinning backwards.
+      //I actually dont think the sign thing is neccesary.
+      if(phi_l < 0)
+      {
+        left_dir = DIR_CW;
+      }
+      else
+      {
+        left_dir = DIR_CCW;
+      }
+
+      if(phi_r < 0)
+      {
+        right_dir = DIR_CCW;
+      }
+      else
+      {
+        right_dir = DIR_CW;
+      }
+
+      // Start millis counter
+      begin_time = millis();
+
+      // Run motors at percentage towards destination
+      sparki.motorRotate(MOTOR_LEFT, left_dir, abs(int(left_speed_pct*100.)));
+      sparki.motorRotate(MOTOR_RIGHT, right_dir, abs(int(right_speed_pct*100.)));
+
    case 0:
       sparki.moveStop();
 //      sparki.clearLCD();
