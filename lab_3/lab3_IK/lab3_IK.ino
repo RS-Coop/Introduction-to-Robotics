@@ -303,7 +303,7 @@ void loop() {
         //Calculate percentage rates to spin wheeles
           dX = P1_UNDER * d_err;
           dTheta = P2_UNDER * b_err + P3_UNDER * h_err;
- sparki.motorRotate(MOTOR, DIRECTION, SPEED)
+
           float phi_l = ((2 * (dX / WHEEL_RADIUS) - dTheta * AXLE_DIAMETER) / 2);
           float phi_r = ((2 * (dX / WHEEL_RADIUS) + dTheta * AXLE_DIAMETER) / 2);
 
@@ -327,7 +327,7 @@ void loop() {
           if(phi_r < 0)
             right_dir = DIR_CCW;
           else
-            right_dir = DIR_CW
+            right_dir = DIR_CW;
 
           // Start millis counter
           begin_time = millis();
