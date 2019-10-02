@@ -67,6 +67,8 @@ float left_speed_pct = 0.;
 float right_speed_pct = 0.;
 int left_dir = DIR_CCW;
 int right_dir = DIR_CW;
+int left_sign = 1;
+int right_sign = 1;
 int left_wheel_rotating = NONE;
 int right_wheel_rotating = NONE;
 
@@ -292,15 +294,28 @@ void loop() {
           }
 
           //Accounting for wheels spinning backwards.
+          //I actually dont think the sign thing is neccesary.
           if(phi_l < 0)
+          {
             left_dir = DIR_CW;
+            left_sign = -1;
+          }
           else
+          {
             left_dir = DIR_CCW;
+            left_dir = 1;
+          }
 
           if(phi_r < 0)
+          {
             right_dir = DIR_CCW;
+            right_dir = -1;
+          }
           else
+          {
             right_dir = DIR_CW;
+            right_sign = 1;
+          }
 
           // Start millis counter
           begin_time = millis();
@@ -332,14 +347,26 @@ void loop() {
 
           //Accounting for wheels spinning backwards.
           if(phi_l < 0)
+          {
             left_dir = DIR_CW;
+            left_sign = -1;
+          }
           else
+          {
             left_dir = DIR_CCW;
+            left_dir = 1;
+          }
 
           if(phi_r < 0)
+          {
             right_dir = DIR_CCW;
+            right_dir = -1;
+          }
           else
+          {
             right_dir = DIR_CW;
+            right_sign = 1;
+          }
 
           // Start millis counter
           begin_time = millis();
