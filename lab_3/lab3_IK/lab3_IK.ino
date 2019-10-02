@@ -13,7 +13,7 @@
 // Limits to qualify success
 // 1 cm is precise for this robot, use 5 cm and 15 degrees
 #define SUCCESS_DISTANCE_ERROR .05 // meters
-#define SUCCESS_HEADING_ERROR 15  // degrees
+#define SUCCESS_HEADING_ERROR 10  // degrees
 
 // Limits to qualify fixing bearing error
 #define DISTANCE_THREASHOLD .07 // meters
@@ -24,7 +24,7 @@
 // Best: 0
 #define P2_OVER .3
 // Best: 20
-#define P3_OVER .01
+#define P3_OVER .005
 
 // Best:
 #define P1_UNDER .1
@@ -94,7 +94,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(0,0.2, to_radians(90));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(-0.2,0.0, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -247,6 +247,7 @@ void loop() {
 
       break;
     case CONTROLLER_GOTO_POSITION_PART3:
+    {
       updateOdometry();
       displayOdometry();
 
@@ -262,9 +263,10 @@ void loop() {
 
 
       // If the heading error and distance error are within acceptable limits, then finish
-      if (d_err <= SUCCESS_DISTANCE_ERROR && h_err <= abs(to_radians(SUCCESS_HEADING_ERROR)))
+      if (d_err <= SUCCESS_DISTANCE_ERROR && abs(h_err) <= to_radians(SUCCESS_HEADING_ERROR))
       {
           current_state = 0;
+          break;
       }
       // If the distance error is greater than a certain limit, emphasize fixing bearing error
       if (d_err >= DISTANCE_THREASHOLD)
@@ -299,10 +301,15 @@ void loop() {
           right_speed_pct = 1;
         }
       }
-      else
+      else if(phi_l < 0)
       {
         right_speed_pct = 1;
-        left_speed_pct = 1; 
+        left_speed_pct = -1; 
+      }
+      else
+      {
+        right_speed_pct = -1;
+        left_speed_pct = 1;
       }
 
       //Accounting for wheels spinning backwards.
@@ -332,6 +339,8 @@ void loop() {
       sparki.motorRotate(MOTOR_LEFT, left_dir, abs(int(left_speed_pct*100.)));
       sparki.motorRotate(MOTOR_RIGHT, right_dir, abs(int(right_speed_pct*100.)));
 
+      break;
+    }
    case 0:
       sparki.moveStop();
 //      sparki.clearLCD();
