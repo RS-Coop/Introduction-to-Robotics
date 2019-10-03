@@ -94,7 +94,7 @@ void setup() {
   right_wheel_rotating = NONE;
 
   // Set test cases here!
-  set_pose_destination(-0.2,0.0, to_radians(0));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
+  set_pose_destination(0.0,0.2, to_radians(180));  // Goal_X_Meters, Goal_Y_Meters, Goal_Theta_Radians
 }
 
 // Sets target robot pose to (x,y,t) in units of meters (x,y) and radians (t)
@@ -283,7 +283,7 @@ void loop() {
       else
       {
           dX = P1_UNDER * d_err;
-          dTheta = h_err;// P2_UNDER * b_err + P3_UNDER * h_err;
+          dTheta = P2_UNDER * b_err + P3_UNDER * h_err;
       }
 
       //I think we need to bound Xr.
@@ -359,8 +359,13 @@ void loop() {
   //sparki.moveStop();
 
   delay_time = end_time - begin_time;
+  Serial.println(end_time - begin_time);
   if (delay_time < 1000*CYCLE_TIME)
     delay(1000*CYCLE_TIME - delay_time); // each loop takes CYCLE_TIME ms
   else
+  {
+    sparki.moveStop();
+    Serial.println(end_time - begin_time);
     delay(10);
+  }
 }
