@@ -8,8 +8,12 @@ from std_msgs.msg import Float32MultiArray, Empty, String, Int16
 
 # GLOBALS
 pose2d_sparki_odometry = None #Pose2D message object, contains x,y,theta members in meters and radians
-#TODO: Track servo angle in radians
-#TODO: Track IR sensor readings (there are five readings in the array: we've been using indices 1,2,3 for left/center/right)
+#DONE: Track servo angle in radians
+SRV_angle
+#DONE: Track IR sensor readings (there are five readings in the array: we've been using indices 1,2,3 for left/center/right)
+IR_center
+IR_left
+IR_right
 #TODO: Create data structure to hold map representation
 
 # TODO: Use these variables to hold your publishers and subscribers
@@ -34,18 +38,23 @@ def main():
 
     while not rospy.is_shutdown():
         #TODO: Implement CYCLE TIME
+        rate = rospy.Rate(1/CYCLE_TIME)
 
         #TODO: Implement line following code here
         #      To create a message for changing motor speed, use Float32MultiArray()
         #      (e.g., msg = Float32MultiArray()     msg.data = [1.0,1.0]      publisher.pub(msg))
-        if
+        if in center
+
+        else if left
+
+        else if right
 
         #TODO: Implement loop closure here
         if False:
             rospy.loginfo("Loop Closure Triggered")
 
         #TODO: Implement CYCLE TIME
-        rospy.sleep(0)
+        rate.sleep()
 
 
 
