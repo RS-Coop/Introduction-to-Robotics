@@ -64,7 +64,7 @@ def main():
         if IR_right > IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_center > IR_THRESHOLD:
             rospy.loginfo("Loop Closure Triggered")
             reset = Pose2D
-            Pose2D.data = [0,0,0]
+            reset.data = [0,0,0]
             publisher_odom.pub(reset)
 
         #DONE: Implement CYCLE TIME
@@ -76,7 +76,7 @@ def init():
     global publisher_motor, publisher_ping, publisher_servo, publisher_odom
     global subscriber_odometry, subscriber_state
     global pose2d_sparki_odometry
-    #TODO: Set up your publishers and subscribers
+    #DONE: Set up your publishers and subscribers
     publisher_motor = rospy.Publisher('/sparki/motor_command', Float32MultiArray, queue_size=1)
     publsiher_ping = rospy.Publisher('/sparki/ping_command', String, queue_size=1)
     publisher_servo = rospy.Publisher('/sparki/set_servo', Int16, queue_size=1)
@@ -85,7 +85,11 @@ def init():
     subscriber_odometry = rospy.Subscriber('/sparki/odometry', Pose2D, callback_update_odometry)
     subscriber_state = rospy.Subscriber('/sparki/state', String, callback_update_state)
 
-    #TODO: Set up your initial odometry pose (pose2d_sparki_odometry) as a new Pose2D message object
+    #DONE: Set up your initial odometry pose (pose2d_sparki_odometry) as a new Pose2D message object
+    pose_init = Pose2D
+    pose_init.data = [0,0,0]
+    publisher_odom.pub(pose_init)
+
     #TODO: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
 
 def callback_update_odometry(data):
