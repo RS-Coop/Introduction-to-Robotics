@@ -35,12 +35,18 @@ def main():
     global IR_THRESHOLD, CYCLE_TIME
     global pose2d_sparki_odometry
 
-    #TODO: Init your node to register it with the ROS core
+    #DONE: Init your node to register it with the ROS core
+    rospy.init_node('sparki', anonymous=True)
     init()
 
     while not rospy.is_shutdown():
         #DONE: Implement CYCLE TIME
         rate = rospy.Rate(1/CYCLE_TIME)
+
+        #Ping the ultrasonic
+        ping = Empty
+        publisher_ping.pub(ping)
+        rospy.loginfo(Ping_dist)
 
         #DONE: Implement line following code here
         #      To create a message for changing motor speed, use Float32MultiArray()
@@ -78,7 +84,7 @@ def init():
     global pose2d_sparki_odometry
     #DONE: Set up your publishers and subscribers
     publisher_motor = rospy.Publisher('/sparki/motor_command', Float32MultiArray, queue_size=1)
-    publsiher_ping = rospy.Publisher('/sparki/ping_command', String, queue_size=1)
+    publisher_ping = rospy.Publisher('/sparki/ping_command', String, queue_size=1)
     publisher_servo = rospy.Publisher('/sparki/set_servo', Int16, queue_size=1)
     publisher_odom = rospy.Publisher('/sparki/set_odometry', Pose2D, queue_size=1)
 
@@ -90,7 +96,7 @@ def init():
     pose_init.data = [0,0,0]
     publisher_odom.pub(pose_init)
 
-    #TODO: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
+    #DONE: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
     publisher_servo.publish(45)
 
 def callback_update_odometry(data):
