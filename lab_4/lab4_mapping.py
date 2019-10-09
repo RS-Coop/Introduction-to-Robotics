@@ -91,7 +91,8 @@ def init():
 def callback_update_odometry(data):
     # Receives geometry_msgs/Pose2D message
     global pose2d_sparki_odometry
-    #TODO: Copy this data into your local odometry variable
+    #DONE: Copy this data into your local odometry variable
+    pose2d_sparki_odometry = data
 
 def callback_update_state(data):
     global SRV_angle, IR_left, IR_center, IR_right
