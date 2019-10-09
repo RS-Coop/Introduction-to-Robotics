@@ -29,7 +29,7 @@ subscriber_state = None
 
 # CONSTANTS
 IR_THRESHOLD = 300 # IR sensor threshold for detecting black track. Change as necessary.
-CYCLE_TIME = 0.1 # In seconds
+CYCLE_TIME = 0.05 # In seconds
 
 def main():
     global publisher_motor, publisher_ping, publisher_servo, publisher_odom
@@ -64,13 +64,18 @@ def main():
             #publish to move right
             msg.data = [1.0,-1.0]
 
+        else:
+            msg.data = [1.0,1.0]
+
         publisher_motor.publish(msg)
 
         #DONE: Implement loop closure here
         if IR_right > IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_center > IR_THRESHOLD:
             rospy.loginfo("Loop Closure Triggered")
-            reset = Pose2D
-            reset.data = [0,0,0]
+            reset = Pose2D()
+            reset.x = 0
+            reset.y = 0
+            reset.theta = 0
             publisher_odom.publish(reset)
 
         #DONE: Implement CYCLE TIME
