@@ -91,6 +91,7 @@ def init():
     publisher_odom.pub(pose_init)
 
     #TODO: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
+    publisher_servo.publish(45)
 
 def callback_update_odometry(data):
     # Receives geometry_msgs/Pose2D message
