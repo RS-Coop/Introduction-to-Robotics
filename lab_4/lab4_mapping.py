@@ -105,7 +105,7 @@ def callback_update_state(data):
     state_dict = json.loads(data.data) # Creates a dictionary object from the JSON string received from the state topic
     #DONE: Load data into your program's local state variables
     SRV_angle = state_dict['servo']
-    PING_dist = state['ping']
+    PING_dist = state_dict['ping']
     IR_FULL = state_dict['light_sensors']
     IR_left = IR_FULL[1]
     IR_center = IR_FULL[2]
