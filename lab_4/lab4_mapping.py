@@ -74,8 +74,15 @@ def callback_update_odometry(data):
     #TODO: Copy this data into your local odometry variable
 
 def callback_update_state(data):
+    global SRV_angle, IR_left, IR_center, IR_right
     state_dict = json.loads(data.data) # Creates a dictionary object from the JSON string received from the state topic
-    #TODO: Load data into your program's local state variables
+    #DONE: Load data into your program's local state variables
+    SRV_angle = state_dict['servo']
+    IR_FULL = state_dict['light_sensors']
+    IR_left = IR_FULL[1]
+    IR_center = IR_FULL[2]
+    IR_right = IR_FULL[3]
+
 
 def convert_ultrasonic_to_robot_coords(x_us):
     #TODO: Using US sensor reading and servo angle, return value in robot-centric coordinates
