@@ -35,14 +35,14 @@ def main():
     global IR_THRESHOLD, CYCLE_TIME
     global pose2d_sparki_odometry
 
-    #TODO: Init your node to register it with the ROS core
+    #DONE: Init your node to register it with the ROS core
     init()
 
     while not rospy.is_shutdown():
         #TODO: Implement CYCLE TIME
         rate = rospy.Rate(1/CYCLE_TIME)
 
-        #TODO: Implement line following code here
+        #DONE: Implement line following code here
         #      To create a message for changing motor speed, use Float32MultiArray()
         #      (e.g., msg = Float32MultiArray()     msg.data = [1.0,1.0]      publisher.pub(msg))
         msg = Float32MultiArray()
@@ -61,10 +61,13 @@ def main():
         publisher_motor.pub(msg)
 
         #TODO: Implement loop closure here
-        if False:
+        if IR_right > IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_center > IR_THRESHOLD:
             rospy.loginfo("Loop Closure Triggered")
+            reset = Pose2D
+            Pose2D.data = [0,0,0]
+            publisher_odom.pub(reset)
 
-        #TODO: Implement CYCLE TIME
+        #DONE: Implement CYCLE TIME
         rate.sleep()
 
 
