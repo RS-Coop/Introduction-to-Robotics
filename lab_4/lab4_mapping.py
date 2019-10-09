@@ -15,6 +15,7 @@ SRV_angle
 IR_center
 IR_left
 IR_right
+PING_dist
 #DONE: Create data structure to hold map representation
 map_array = np.zeros([20, 10]);
 
@@ -90,7 +91,7 @@ def init():
     pose_init.data = [0,0,0]
     publisher_odom.pub(pose_init)
 
-    #TODO: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
+    #DONE: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
     publisher_servo.publish(45)
 
 def callback_update_odometry(data):
@@ -100,10 +101,11 @@ def callback_update_odometry(data):
     pose2d_sparki_odometry = data
 
 def callback_update_state(data):
-    global SRV_angle, IR_left, IR_center, IR_right
+    global SRV_angle, IR_left, IR_center, IR_right, PING_dist
     state_dict = json.loads(data.data) # Creates a dictionary object from the JSON string received from the state topic
     #DONE: Load data into your program's local state variables
     SRV_angle = state_dict['servo']
+    PING_dist = state['ping']
     IR_FULL = state_dict['light_sensors']
     IR_left = IR_FULL[1]
     IR_center = IR_FULL[2]
