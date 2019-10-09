@@ -2,6 +2,7 @@ import rospy
 import json
 import copy
 import time
+import numpy as np
 from geometry_msgs.msg import Pose2D
 from std_msgs.msg import Float32MultiArray, Empty, String, Int16
 
@@ -14,7 +15,8 @@ SRV_angle
 IR_center
 IR_left
 IR_right
-#TODO: Create data structure to hold map representation
+#DONE: Create data structure to hold map representation
+map_array = np.zeros([20, 10]);
 
 # TODO: Use these variables to hold your publishers and subscribers
 publisher_motor = None
