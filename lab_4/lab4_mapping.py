@@ -87,6 +87,7 @@ def init():
 
     #TODO: Set up your initial odometry pose (pose2d_sparki_odometry) as a new Pose2D message object
     #TODO: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
+    publisher_servo.publish(45)
 
 def callback_update_odometry(data):
     # Receives geometry_msgs/Pose2D message
