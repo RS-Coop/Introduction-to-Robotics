@@ -6,7 +6,7 @@ from geometry_msgs.msg import Pose2D
 from std_msgs.msg import Float32MultiArray, Empty, String, Int16
 
 
-# GLOBALS 
+# GLOBALS
 pose2d_sparki_odometry = None #Pose2D message object, contains x,y,theta members in meters and radians
 #TODO: Track servo angle in radians
 #TODO: Track IR sensor readings (there are five readings in the array: we've been using indices 1,2,3 for left/center/right)
@@ -20,7 +20,7 @@ publisher_servo = None
 subscriber_odometry = None
 subscriber_state = None
 
-# CONSTANTS 
+# CONSTANTS
 IR_THRESHOLD = 300 # IR sensor threshold for detecting black track. Change as necessary.
 CYCLE_TIME = 0.1 # In seconds
 
@@ -38,6 +38,7 @@ def main():
         #TODO: Implement line following code here
         #      To create a message for changing motor speed, use Float32MultiArray()
         #      (e.g., msg = Float32MultiArray()     msg.data = [1.0,1.0]      publisher.pub(msg))
+        if
 
         #TODO: Implement loop closure here
         if False:
@@ -99,5 +100,3 @@ def cost(cell_index_from, cell_index_to):
 
 if __name__ == "__main__":
     main()
-
-

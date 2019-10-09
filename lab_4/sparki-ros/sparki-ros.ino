@@ -17,7 +17,7 @@ const char SYNC = (char)22;            // send this when in the command loop wai
 const char COMMAND_BEEP = 'b';          // requires 2 arguments: int freq and int time; returns nothing
 const char COMMAND_COMPASS = 'c';       // no arguments; returns float heading
 const char COMMAND_GET_ACCEL = 'f';     // no arguments; returns array of 3 floats with values of x, y, and z
-const char COMMAND_GET_LIGHT = 'k';     // no arguments; returns array of 3 ints with values of left, center & right light sensor                                    
+const char COMMAND_GET_LIGHT = 'k';     // no arguments; returns array of 3 ints with values of left, center & right light sensor
 const char COMMAND_GET_LINE = 'm';      // no arguments; returns array of 5 ints with values of left edge, left, center, right & right edge line sensor
 const char COMMAND_GET_MAG = 'o';       // no arguments; returns array of 3 floats with values of x, y, and z
 const char COMMAND_GRIPPER_CLOSE_DIS = 'v'; // requires 1 argument: float distance to close the gripper; returns nothing
@@ -26,7 +26,7 @@ const char COMMAND_GRIPPER_STOP = 'y';  // no arguments; returns nothing
 const char COMMAND_INIT = 'z';          // no arguments; confirms communication between computer and robot
 const char COMMAND_LCD_CLEAR = '0';     // no arguments; returns nothing
 const char COMMAND_LCD_DRAW_CIRCLE = '1';   // requires 4 arguments: int x&y, int radius, and int filled (1 is filled); returns nothing
-const char COMMAND_LCD_DRAW_RECT = '4'; // requires 5 arguments: int x&y for start point, ints width & height, and int filled (1 is filled); returns nothing 
+const char COMMAND_LCD_DRAW_RECT = '4'; // requires 5 arguments: int x&y for start point, ints width & height, and int filled (1 is filled); returns nothing
 
 const char COMMAND_LCD_DRAW_LINE = '2'; // requires 4 arguments ints x&y for start point and x1&y1 for end points; returns nothing
 const char COMMAND_LCD_DRAW_PIXEL = '3';    // requires 2 arguments: int x&y; returns nothing
@@ -45,7 +45,7 @@ const char COMMAND_RECEIVE_IR = 'E';    // no arguments; returns int IR receiver
 const char COMMAND_SEND_IR = 'F';       // requires 1 argument: int data; returns nothing
 const char COMMAND_SERVO = 'G';         // requires 1 argument: int servo position; returns nothing
 
-const char COMMAND_SET_RGB_LED = 'I';   // requires 3 arguments: int red, int green, int blue; returns nothing; note hardware limitations 
+const char COMMAND_SET_RGB_LED = 'I';   // requires 3 arguments: int red, int green, int blue; returns nothing; note hardware limitations
                                         // will prevent some values of red, green, and blue from showing up
 const char COMMAND_SET_STATUS_LED = 'J';    // requires 1 argument: int brightness of LED; returns nothing
 const char COMMAND_STOP = 'K';          // no arguments; returns nothing
@@ -161,9 +161,9 @@ int getSerialInt() {
 // returns the number of bytes read
 int getSerialBytes(char* buf, int size) {
   char inByte = -1;
-  int maxChars = size; 
+  int maxChars = size;
   int count = 0;
-  
+
   // zero out the buffer
   for( int i = 0; i < maxChars; i++ ) {
     buf[i] = '\0';
@@ -172,13 +172,13 @@ int getSerialBytes(char* buf, int size) {
   while ((inByte != TERMINATOR) && (count < maxChars)) {
     if(serial.available()) {
       inByte = serial.read();
-   
+
       if ((inByte != TERMINATOR) && (inByte >= 0)) {
         buf[count++] = (char)inByte;
       }
     }
   }
-  
+
   // flush extra characters
   while ((inByte != TERMINATOR) && (serial.available())) {
       inByte = serial.read();
@@ -190,33 +190,33 @@ int getSerialBytes(char* buf, int size) {
 
 /* These functions send data from Sparki to the computer over Bluetooth */
 void sendSerial(char c) {
-  serial.print(c); 
-  serial.print(TERMINATOR); 
+  serial.print(c);
+  serial.print(TERMINATOR);
 }
 
 void sendSerial(char* message) {
-  serial.print(message); 
-  serial.print(TERMINATOR); 
+  serial.print(message);
+  serial.print(TERMINATOR);
 }
 
 void sendSerial(float f) {
-  serial.print(f); 
-  serial.print(TERMINATOR); 
+  serial.print(f);
+  serial.print(TERMINATOR);
 }
 
 void sendSerial(float* floats, int size) {
-  for(int j = 0; j < size; j++) {  
+  for(int j = 0; j < size; j++) {
     sendSerial(floats[j]);
   }
 }
 
 void sendSerial(int i) {
-  serial.print(i); 
-  serial.print(TERMINATOR); 
+  serial.print(i);
+  serial.print(TERMINATOR);
 }
 
 void sendSerial(int* ints, int size) {
-  for(int j = 0; j < size; j++) {  
+  for(int j = 0; j < size; j++) {
     sendSerial(ints[j]);
   }
 }
@@ -230,48 +230,48 @@ void sendSync() {
 /* ***** SPARKI FUNCTIONS ***** */
 // void getAccel()
 // sends an array with the values of the X, Y, and Z accelerometers
-void getAccel() { 
+void getAccel() {
   sparki.readAccelData(); // it's faster to get the values this way than call them individually
-  float values[3] = { 
-    -sparki.xAxisAccel*9.8, 
-    -sparki.yAxisAccel*9.8, 
+  float values[3] = {
+    -sparki.xAxisAccel*9.8,
+    -sparki.yAxisAccel*9.8,
     -sparki.zAxisAccel*9.8   };
-  
+
   sendSerial( values, 3 );
 } // end getAccel()
 
 
 // void getLight()
 // sends an array with the values of the left, center and right light sensors
-void getLight() { 
-  int values[3] = { 
+void getLight() {
+  int values[3] = {
     sparki.lightLeft(),
     sparki.lightCenter(),
-    sparki.lightRight()   };  
+    sparki.lightRight()   };
   sendSerial( values, 3 );
 } // end getLight()
 
 
 // void getLine()
 // sends an array with the values of the left edge, left, center, right, and right edge line sensors
-void getLine() { 
-  int values[5] = { 
+void getLine() {
+  int values[5] = {
     sparki.edgeLeft(),
     sparki.lineLeft(),
     sparki.lineCenter(),
     sparki.lineRight(),
     sparki.edgeRight()   };
-  
+
   sendSerial( values, 5 );
 } // end getLine()
 
 // void getMag()
 // sends an array with the values of the X, Y, and Z magnometers
-void getMag() { 
+void getMag() {
   sparki.readMag(); // it's faster to get the values this way than call them individually
-  float values[3] = { 
-    sparki.xAxisMag, 
-    sparki.yAxisMag, 
+  float values[3] = {
+    sparki.xAxisMag,
+    sparki.yAxisMag,
     sparki.zAxisMag   };
 
   sendSerial( values, 3 );
@@ -282,9 +282,9 @@ void initSparki() {
   sparki.clearLCD();
   sparki.print("Init Received");
   sparki.updateLCD();
-	
+
   sendSerial("Sparki ROS Connected");
-} 
+}
 
 
 // LCDdrawCircle(int, int, int, int)
@@ -318,10 +318,10 @@ void LCDdrawRect(int corner_x, int corner_y, int width, int height, int filled) 
 void LCDdrawString(int x, int y) {
   int maxChars = 20;
   char buf[maxChars];
- 
+
   getSerialBytes( buf, maxChars );
 
-  sparki.drawString( x, y, buf);  
+  sparki.drawString( x, y, buf);
 } // end LCDdrawString(int, int)
 
 
@@ -330,10 +330,10 @@ void LCDdrawString(int x, int y) {
 void LCDprint() {
   int maxChars = 20;
   char buf[maxChars];
-  
+
   getSerialBytes( buf, maxChars );
 
-  sparki.print(buf);  
+  sparki.print(buf);
 } // end LCDprint()
 
 
@@ -348,17 +348,17 @@ void LCDsetColor(int color) {
 // moves Sparki's left wheel at left_speed and right wheel at right_speed
 // speed should be a number from -100 to 100 indicating the percentage of power used
 // if the speed is positive, that indicates forward motion on that wheel
-void motors(int left_speed, int right_speed) { 
+void motors(int left_speed, int right_speed) {
   if (left_speed >= 0) {
     sparki.motorRotate(MOTOR_LEFT, DIR_CCW, left_speed);
-  } 
+  }
   else if (left_speed < 0) {
     sparki.motorRotate(MOTOR_LEFT, DIR_CW, -left_speed);
   }
 
   if (right_speed >= 0) {
     sparki.motorRotate(MOTOR_RIGHT, DIR_CW, right_speed);
-  } 
+  }
   else if (right_speed < 0) {
     sparki.motorRotate(MOTOR_RIGHT, DIR_CCW, -right_speed);
   }
@@ -404,10 +404,10 @@ void turnBy(float deg) {
 // setup - start robot
 void setup() {
   setStatusLED(50);
-  sparki.servo(SERVO_CENTER); // rotate the servo to its 0 degree postion (forward)  
+  sparki.servo(SERVO_CENTER); // rotate the servo to its 0 degree postion (forward)
 
   serial.begin(9600);
- 
+
   sparki.RGB( 0, 0, 0 );
 
   sparki.println("SparkiROS Online");
@@ -525,7 +525,7 @@ void loop() {
       sparki.updateLCD();
       break;
     case COMMAND_MOTORS:              // int, int, float; returns nothing
-      { 
+      {
       int left_speed = getSerialInt();
       int right_speed = getSerialInt();
       motors( left_speed, right_speed );
@@ -554,7 +554,7 @@ void loop() {
 	    /* arcbotics states that underlying hardware limitations can cause colors not to appear as intended
 	       specifically, the LEDs draw different voltages, red more than green and green more than blue
 	       as a side effect, if you have a situation where red == green == blue, only red will show */
-		 
+
 	    /* arcbotics recommends the following values for the specified colors:
          blue   0,   0,   100
          green  0,   100, 0
@@ -591,11 +591,11 @@ void loop() {
       sparki.updateLCD();
       stop();
       sparki.beep();
-      serial.print(TERMINATOR); 
+      serial.print(TERMINATOR);
       break;
     } // end switch ((char)inByte)
   } // end if (serial.available())
-  
+
   sendSync();    // we send the sync every time rather than a more complex handshake to save space in the program
 } // end loop()
 /* ########### END OF FUNCTIONS ########### */
