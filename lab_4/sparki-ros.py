@@ -34,7 +34,7 @@ DEBUG_CRITICAL = 1  # reports an error which interferes with proper or consisten
 DEBUG_ALWAYS = 0  # should always be reported
 
 
-CONN_TIMEOUT = 2  # in seconds
+CONN_TIMEOUT = 0.1  # in seconds
 
 # ***** COMMAND CHARACTER CODES ***** #
 # This is the list of possible command codes; note that it is possible for some commands to be turned off at Sparki's level (e.g. the Accel, Mag)
@@ -119,14 +119,14 @@ SPARKI_SPEED = 0.0278 # 100% speed in m/s
 SPARKI_AXLE_DIAMETER = 0.085 # Distance between wheels, meters 
 SPARKI_WHEEL_RADIUS = 0.03 # Radius of wheels, meters
 CYCLE_TIME = 0.05 # Minimum delay between cycles
-IR_CYCLE_TIME = 0.5 # Minimum Delay polling IR sensors
+IR_CYCLE_TIME = 0.05 # Minimum Delay polling IR sensors
 LAST_IR_POLL = 0
 sparki_ir_sensors = [0,0,0,0,0]
 pub_sparki_odom, pub_sparki_state = None, None
 sparki_ping_requested = False
 
 def main(com_port):
-  global pub_sparki_odom, pub_sparki_state
+  global pub_sparki_odom, pub_sparki_state, serial_conn
   rospy.init_node("sparki_driver_ros")
   init(com_port)
 
@@ -140,13 +140,17 @@ def main(com_port):
 
   last_time = time.time()
   while not rospy.is_shutdown():
-    cycle_start = time.time()
-    # Update and Publish Odometry
-    update_and_publish_odometry(pub_sparki_odom, time.time() - last_time)
-    last_time = time.time()
-    # Update and Publish Sensors
-    update_and_publish_state(pub_sparki_state)
-    rospy.sleep(max(0,CYCLE_TIME-(time.time()-cycle_start)))
+    try:
+        cycle_start = time.time()
+        # Update and Publish Odometry
+        update_and_publish_odometry(pub_sparki_odom, time.time() - last_time)
+        last_time = time.time()
+        # Update and Publish Sensors
+        update_and_publish_state(pub_sparki_state)
+        rospy.sleep(max(0,CYCLE_TIME-(time.time()-cycle_start)))
+    except serial.SerialException:
+        rospy.loginfo("Serial port reset for some reason! Reconnecting.")
+        init(com_port)
 
 def set_odometry(data):
     global odometry_x, odometry_y, odometry_theta
@@ -338,7 +342,7 @@ def init(com_port, print_versions=True):
     serial_port = com_port
 
     try:
-        serial_conn = serial.Serial(port=serial_port, baudrate=57600, timeout=CONN_TIMEOUT)
+        serial_conn = serial.Serial(port=serial_port, baudrate=9600, timeout=CONN_TIMEOUT)
     except serial.SerialException:
         printDebug("Unable to Connect over Serial to " + serial_port, DEBUG_ERROR)
         raise
