@@ -169,8 +169,8 @@ def convert_ultra_to_world(ultra_dist):
     return convert_robot_coords_to_world(convert_ultrasonic_to_robot_coords(ultra_dist))
 
 def populate_map_from_ping(x_ping, y_ping):
-    #TODO: Given world coordinates of an object detected via ping, fill in the corresponding part of the map
-    pass
+    #DONE: Given world coordinates of an object detected via ping, fill in the corresponding part of the map
+    map_array[x_ping, y_ping] = 1
 
 def display_map():
     cmap = colors.ListedColormap(['blue', 'red'])
