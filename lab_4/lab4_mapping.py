@@ -47,7 +47,11 @@ def main():
 
         #Ping the ultrasonic
         publisher_ping.publish(Empty())
-        rospy.loginfo(PING_dist)
+        rospy.loginfo("Ping:%s",PING_dist)
+        try:
+            convert_ultra_to_world(PING_dist)
+        except:
+            pass
 
         #DONE: Implement line following code here
         #      To create a message for changing motor speed, use Float32MultiArray()
@@ -109,7 +113,7 @@ def init():
     publisher_odom.publish(pose_init)
 
     #DONE: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
-    publisher_servo.publish(45)
+    #publisher_servo.publish(45)
 
 def callback_update_odometry(data):
     # Receives geometry_msgs/Pose2D message
@@ -133,26 +137,35 @@ def callback_update_state(data):
 
 
 def convert_ultrasonic_to_robot_coords(x_us):
-    #Done: Using US sensor reading and servo angle, return value in robot-centric coordinates
+    #DONE: Using US sensor reading and servo angle, return value in robot-centric coordinates
     x_r, y_r = 0., 0.
 
     x_r = x_us * math.cos(SRV_angle)
     y_r = x_us * math.sin(SRV_angle)
 
-    return x_r, y_r
+    rospy.loginfo("Robot coordinates:%s,%s",x_r,y_r)
 
-def convert_robot_coords_to_world(x_r, y_r):
-    #TODO: Using odometry, convert robot-centric coordinates into world coordinates
+    return (x_r, y_r)
+
+def convert_robot_coords_to_world(pos_vec):
+    #DONE: Using odometry, convert robot-centric coordinates into world coordinates
+    x_r, y_r = pos_vec
     x_w, y_w = 0., 0.
 
     _theta = pose2d_sparki_odometry.theta
     _x = pose2d_sparki_odometry.x
     _y = pose2d_sparki_odometry.y
 
-    x_w = x_r*(math.cos(_theta) - math.sin(_theta)) + _x
-    y_w =
+
+    x_w = x_r*math.cos(_theta) - y_r*math.sin(_theta) + _x
+    y_w = x_r*math.cos(_theta) + y_r*math.sin(_theta) + _y
+
+    rospy.loginfo("World coordinates:%s, %s",x_w,y_w)
 
     return x_w, y_w
+
+def convert_ultra_to_world(ultra_dist):
+    return convert_robot_coords_to_world(convert_ultrasonic_to_robot_coords(ultra_dist))
 
 def populate_map_from_ping(x_ping, y_ping):
     #TODO: Given world coordinates of an object detected via ping, fill in the corresponding part of the map
