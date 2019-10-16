@@ -52,17 +52,17 @@ def main():
         #      To create a message for changing motor speed, use Float32MultiArray()
         #      (e.g., msg = Float32MultiArray()     msg.data = [1.0,1.0]      publisher.pub(msg))
         msg = Float32MultiArray()
-        if IR_center > IR_THRESHOLD and IR_left < IR_THRESHOLD and IR_right < IR_THRESHOLD:
-            #Publish to move forward
-            msg.data = [1.0,1.0]
-
+        if IR_right > IR_THRESHOLD and IR_left < IR_THRESHOLD and IR_center < IR_THRESHOLD:
+	    #publish to move right
+            msg.data = [1.0,-1.0]
         elif IR_left > IR_THRESHOLD and IR_right < IR_THRESHOLD and IR_center < IR_THRESHOLD:
             #Publish to move left
             msg.data = [-1.0,1.0]
 
-        elif IR_right > IR_THRESHOLD and IR_left < IR_THRESHOLD and IR_center < IR_THRESHOLD:
-            #publish to move right
-            msg.data = [1.0,-1.0]
+        elif IR_center > IR_THRESHOLD and IR_left < IR_THRESHOLD and IR_right < IR_THRESHOLD:    
+	    #Publish to move forward
+            msg.data = [1.0,1.0]            
+
 
         else:
             msg.data = [1.0,1.0]
