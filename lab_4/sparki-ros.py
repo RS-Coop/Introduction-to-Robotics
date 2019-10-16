@@ -177,40 +177,40 @@ def send_ping(data):
     sparki_ping_requested = True
 
 def update_and_publish_state(pub):
-  global sparki_servo_theta, sparki_ir_sensors, LAST_IR_POLL, sparki_ping_requested
-  state = {}
-  state['servo'] = sparki_servo_theta
+    global sparki_servo_theta, sparki_ir_sensors, LAST_IR_POLL, sparki_ping_requested
+    state = {}
+    state['servo'] = sparki_servo_theta
 
-  if (time.time() - LAST_IR_POLL > IR_CYCLE_TIME):
-    sparki_ir_sensors = getLine()
-    LAST_IR_POLL = time.time()
+    if (time.time() - LAST_IR_POLL > IR_CYCLE_TIME):
+        sparki_ir_sensors = getLine()
+        LAST_IR_POLL = time.time()
 
-  state['light_sensors'] = sparki_ir_sensors
+    state['light_sensors'] = sparki_ir_sensors
 
-  if sparki_ping_requested is True:
-    sparki_ping_dist = ping()
-    state['ping'] = sparki_ping_dist
-    sparki_ping_requested = False
+    if sparki_ping_requested is True:
+        sparki_ping_dist = ping()
+        state['ping'] = sparki_ping_dist
+        sparki_ping_requested = False
 
 
-  pub.publish(json.dumps(state))
+    pub.publish(json.dumps(state))
 
 
 def update_and_publish_odometry(pub, time_delta):
-  global SPARKI_SPEED, SPARKI_AXLE_DIAMETER
-  global motor_speed_left, motor_speed_right
-  global odometry_x, odometry_y, odometry_theta
-  left_wheel_dist = (motor_speed_left * time_delta * SPARKI_SPEED)
-  right_wheel_dist = (motor_speed_right * time_delta * SPARKI_SPEED)
+    global SPARKI_SPEED, SPARKI_AXLE_DIAMETER
+    global motor_speed_left, motor_speed_right
+    global odometry_x, odometry_y, odometry_theta
+    left_wheel_dist = (motor_speed_left * time_delta * SPARKI_SPEED)
+    right_wheel_dist = (motor_speed_right * time_delta * SPARKI_SPEED)
 
-  odometry_x += math.cos(odometry_theta) * (left_wheel_dist+right_wheel_dist)/2.
-  odometry_y += math.sin(odometry_theta) * (left_wheel_dist+right_wheel_dist)/2.
-  odometry_theta += (right_wheel_dist - left_wheel_dist) / SPARKI_AXLE_DIAMETER
+    odometry_x += math.cos(odometry_theta) * (left_wheel_dist+right_wheel_dist)/2.
+    odometry_y += math.sin(odometry_theta) * (left_wheel_dist+right_wheel_dist)/2.
+    odometry_theta += (right_wheel_dist - left_wheel_dist) / SPARKI_AXLE_DIAMETER
 
-  pose = Pose2D()
-  pose.x, pose.y, pose.theta = odometry_x, odometry_y, odometry_theta
-  pub.publish(pose)
-# -------------------------------------
+    pose = Pose2D()
+    pose.x, pose.y, pose.theta = odometry_x, odometry_y, odometry_theta
+    pub.publish(pose)
+    # -------------------------------------
 
 def printDebug(message, priority=logging.WARN):
     """ Logs message given the priority specified
@@ -608,11 +608,11 @@ def waitForSync():
 
 
 if __name__ == "__main__":
-  if (len(sys.argv) < 2):
+    if (len(sys.argv) < 2):
     print("Sparki-ros must be run with a Sparki COM port specified")
     exit()
-  while True:
-      try:
+    while True:
+        try:
         main(sys.argv[1])
-      except serial.SerialException:
+        except serial.SerialException:
         pass
