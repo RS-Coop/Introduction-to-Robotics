@@ -43,8 +43,7 @@ def main():
 
     while not rospy.is_shutdown():
         #DONE: Implement CYCLE TIME
-        # rate = rospy.Rate(1/CYCLE_TIME)
-        initial = time.time()
+        rate = rospy.Rate(1/CYCLE_TIME)
 
         #Ping the ultrasonic
         publisher_ping.publish(Empty())
@@ -54,23 +53,24 @@ def main():
         #      To create a message for changing motor speed, use Float32MultiArray()
         #      (e.g., msg = Float32MultiArray()     msg.data = [1.0,1.0]      publisher.pub(msg))
         msg = Float32MultiArray()
-        if IR_right < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_center > IR_THRESHOLD:
-	        #publish to move right
-            msg.data = [-1.0,1.0]
-            rospy.loginfo("Right Turn")
-        elif IR_left < IR_THRESHOLD and IR_right > IR_THRESHOLD and IR_center > IR_THRESHOLD:
-            #Publish to move left
-            msg.data = [1.0,-1.0]
-            rospy.loginfo("Left Turn")
-
-        elif IR_center < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_right > IR_THRESHOLD:
-	        #Publish to move forward
-            msg.data = [1.0,1.0]
-            rospy.loginfo("Forward")
-
-        else: #Only added this because it wasnt working
-            msg.data = [0.0,0.0]
-            rospy.loginfo("Default")
+        # if IR_right < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_center > IR_THRESHOLD:
+	    #     #publish to move right
+        #     msg.data = [-1.0,1.0]
+        #     rospy.loginfo("Right Turn")
+        # elif IR_left < IR_THRESHOLD and IR_right > IR_THRESHOLD and IR_center > IR_THRESHOLD:
+        #     #Publish to move left
+        #     msg.data = [1.0,-1.0]
+        #     rospy.loginfo("Left Turn")
+        #
+        # elif IR_center < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_right > IR_THRESHOLD:
+	    #     #Publish to move forward
+        #     msg.data = [1.0,1.0]
+        #     rospy.loginfo("Forward")
+        #
+        # else: #Only added this because it wasnt working
+        #     msg.data = [0.0,0.0]
+        #     rospy.loginfo("Default")
+        msg.data = [1.0,1.0]
 
         publisher_motor.publish(msg)
 
@@ -84,8 +84,7 @@ def main():
             publisher_odom.publish(reset)
 
         #DONE: Implement CYCLE TIME
-        # rate.sleep()
-        rospy.sleep(CYCLE_TIME-(time.time()-initial))
+        rate.sleep()
 
 
 
@@ -147,9 +146,11 @@ def convert_robot_coords_to_world(x_r, y_r):
     x_w, y_w = 0., 0.
 
     _theta = pose2d_sparki_odometry.theta
+    _x = pose2d_sparki_odometry.x
+    _y = pose2d_sparki_odometry.y
 
-    x_w = x_r*(math.cos(_theta) - math.sin(_theta))
-    y_w = 0
+    x_w = x_r*(math.cos(_theta) - math.sin(_theta)) + _x
+    y_w =
 
     return x_w, y_w
 
