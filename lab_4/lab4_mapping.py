@@ -6,7 +6,8 @@ import numpy as np
 import math
 from geometry_msgs.msg import Pose2D
 from std_msgs.msg import Float32MultiArray, Empty, String, Int16
-
+import matplotlib.pyplot as plt
+from matplotlib import colors
 
 # GLOBALS
 pose2d_sparki_odometry = None #Pose2D message object, contains x,y,theta members in meters and radians
@@ -18,7 +19,7 @@ IR_left = 0
 IR_right = 0
 PING_dist = 0
 #DONE: Create data structure to hold map representation
-map_array = np.zeros([20, 10]);
+map_array = np.zeros([10, 20]);
 
 # TODO: Use these variables to hold your publishers and subscribers
 publisher_motor = None
@@ -172,8 +173,13 @@ def populate_map_from_ping(x_ping, y_ping):
     pass
 
 def display_map():
-    #TODO: Display the map
-    pass
+    cmap = colors.ListedColormap(['blue', 'red'])
+    bounds=[0,0.5,1]
+
+    norm = colors.BoundaryNorm(bounds, cmap.N)
+    plt.imshow(map_array, interpolation='nearest', origin='lower', cmap=cmap, norm=norm)
+    
+    plt.show()
 
 def ij_to_cell_index(i,j):
     #TODO: Convert from i,j coordinates to a single integer that identifies a grid cell
