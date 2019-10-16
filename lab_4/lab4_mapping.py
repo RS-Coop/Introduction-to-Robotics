@@ -3,6 +3,7 @@ import json
 import copy
 import time
 import numpy as np
+import math
 from geometry_msgs.msg import Pose2D
 from std_msgs.msg import Float32MultiArray, Empty, String, Int16
 
@@ -64,7 +65,7 @@ def main():
             #publish to move right
             msg.data = [1.0,-1.0]
 
-        else:
+        else: #Only added this because it wasnt working
             msg.data = [1.0,1.0]
 
         publisher_motor.publish(msg)
@@ -128,13 +129,22 @@ def callback_update_state(data):
 
 
 def convert_ultrasonic_to_robot_coords(x_us):
-    #TODO: Using US sensor reading and servo angle, return value in robot-centric coordinates
+    #Done: Using US sensor reading and servo angle, return value in robot-centric coordinates
     x_r, y_r = 0., 0.
+
+    x_r = x_us * math.cos(SRV_angle)
+    y_r = x_us * math.sin(SRV_angle)
+
     return x_r, y_r
 
 def convert_robot_coords_to_world(x_r, y_r):
     #TODO: Using odometry, convert robot-centric coordinates into world coordinates
     x_w, y_w = 0., 0.
+
+    _theta = pose2d_sparki_odometry.theta
+
+    x_w = x_r*(math.cos(_theta) - math.sin(_theta))
+    y_w = 0
 
     return x_w, y_w
 
