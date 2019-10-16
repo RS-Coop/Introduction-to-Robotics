@@ -29,7 +29,7 @@ subscriber_odometry = None
 subscriber_state = None
 
 # CONSTANTS
-IR_THRESHOLD = 300 # IR sensor threshold for detecting black track. Change as necessary.
+IR_THRESHOLD = 500 # IR sensor threshold for detecting black track. Change as necessary.
 CYCLE_TIME = 0.05 # In seconds
 
 def main():
@@ -43,7 +43,8 @@ def main():
 
     while not rospy.is_shutdown():
         #DONE: Implement CYCLE TIME
-        rate = rospy.Rate(1/CYCLE_TIME)
+        # rate = rospy.Rate(1/CYCLE_TIME)
+        initial = time.time()
 
         #Ping the ultrasonic
         publisher_ping.publish(Empty())
@@ -53,20 +54,23 @@ def main():
         #      To create a message for changing motor speed, use Float32MultiArray()
         #      (e.g., msg = Float32MultiArray()     msg.data = [1.0,1.0]      publisher.pub(msg))
         msg = Float32MultiArray()
-        if IR_right > IR_THRESHOLD and IR_left < IR_THRESHOLD and IR_center < IR_THRESHOLD:
-	    #publish to move right
-            msg.data = [1.0,-1.0]
-        elif IR_left > IR_THRESHOLD and IR_right < IR_THRESHOLD and IR_center < IR_THRESHOLD:
-            #Publish to move left
+        if IR_right < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_center > IR_THRESHOLD:
+	        #publish to move right
             msg.data = [-1.0,1.0]
+            rospy.loginfo("Right Turn")
+        elif IR_left < IR_THRESHOLD and IR_right > IR_THRESHOLD and IR_center > IR_THRESHOLD:
+            #Publish to move left
+            msg.data = [1.0,-1.0]
+            rospy.loginfo("Left Turn")
 
-        elif IR_center > IR_THRESHOLD and IR_left < IR_THRESHOLD and IR_right < IR_THRESHOLD:    
-	    #Publish to move forward
-            msg.data = [1.0,1.0]            
-
+        elif IR_center < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_right > IR_THRESHOLD:
+	        #Publish to move forward
+            msg.data = [1.0,1.0]
+            rospy.loginfo("Forward")
 
         else: #Only added this because it wasnt working
-            msg.data = [1.0,1.0]
+            msg.data = [0.0,0.0]
+            rospy.loginfo("Default")
 
         publisher_motor.publish(msg)
 
@@ -80,7 +84,8 @@ def main():
             publisher_odom.publish(reset)
 
         #DONE: Implement CYCLE TIME
-        rate.sleep()
+        # rate.sleep()
+        rospy.sleep(CYCLE_TIME-(time.time()-initial))
 
 
 
