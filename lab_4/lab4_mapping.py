@@ -159,9 +159,11 @@ def convert_robot_coords_to_world(pos_vec):
 
 
     x_w = x_r*math.cos(_theta) - y_r*math.sin(_theta) + _x
-    y_w = x_r*math.cos(_theta) + y_r*math.sin(_theta) + _y
+    y_w = x_r*math.sin(_theta) + y_r*math.cos(_theta) + _y
 
-    rospy.loginfo("World coordinates:%s, %s",x_w,y_w)
+    rospy.loginfo("Robot position:%s,%s",_x,_y)
+
+    rospy.loginfo("World coordinates:%s,%s",x_w,y_w)
 
     return x_w, y_w
 
@@ -178,7 +180,7 @@ def display_map():
 
     norm = colors.BoundaryNorm(bounds, cmap.N)
     plt.imshow(map_array, interpolation='nearest', origin='lower', cmap=cmap, norm=norm)
-    
+
     plt.show()
 
 def ij_to_cell_index(i,j):
