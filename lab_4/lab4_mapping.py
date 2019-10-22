@@ -141,6 +141,7 @@ def callback_update_state(data):
 
 def convert_ultrasonic_to_robot_coords(x_us):
     #DONE: Using US sensor reading and servo angle, return value in robot-centric coordinates
+    x_us = x_us/100.0
     x_r, y_r = 0., 0.
 
     x_r = x_us * math.cos(SRV_angle)
@@ -171,6 +172,16 @@ def convert_robot_coords_to_world(pos_vec):
 
 def convert_ultra_to_world(ultra_dist):
     return convert_robot_coords_to_world(convert_ultrasonic_to_robot_coords(ultra_dist))
+
+def world_to_map(x,y):
+    i = 0
+    j = 0
+    return i, j
+
+def map_to_world(i,j):
+    x = 0
+    y = 0
+    return x, y
 
 def populate_map_from_ping(x_ping, y_ping):
     #DONE: Given world coordinates of an object detected via ping, fill in the corresponding part of the map
