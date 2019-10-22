@@ -205,7 +205,11 @@ def cell_index_to_ij(cell_index):
 
 def cost(cell_index_from, cell_index_to):
     #TODO: Return cost of traversing from one cell to another
-    return 0
+    # This should be an admissible heuristic. Since this doesn't account for obsticles
+    # the manhattan distance should always be optimistic.
+    start_i, start_j = cell_index_to_ij(cell_index_from)
+    dest_i, dest_j = cell_index_to_ij(cell_index_to)
+    return abs(start_i - dest_i) + abs(start_j - dest_j)
 
 if __name__ == "__main__":
     main()
