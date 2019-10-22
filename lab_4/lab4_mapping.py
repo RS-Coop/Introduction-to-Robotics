@@ -19,7 +19,9 @@ IR_left = 0
 IR_right = 0
 PING_dist = 0
 #DONE: Create data structure to hold map representation
-map_array = np.zeros([42, 60]);
+y_size = 10
+x_size = 20
+map_array = np.zeros([y_size, x_size]);
 
 # TODO: Use these variables to hold your publishers and subscribers
 publisher_motor = None
@@ -172,12 +174,10 @@ def convert_ultra_to_world(ultra_dist):
     return convert_robot_coords_to_world(convert_ultrasonic_to_robot_coords(ultra_dist))
 
 def world_to_map(x,y):
-    return i, j
+    return math.ceil(y), math.ceil(x)
 
 def map_to_world(i,j):
-    x = 0
-    y = 0
-    return x, y
+    return j+0.5, i+0.5
 
 def populate_map_from_ping(x_ping, y_ping):
     #DONE: Given world coordinates of an object detected via ping, fill in the corresponding part of the map
@@ -194,11 +194,13 @@ def display_map():
 
 def ij_to_cell_index(i,j):
     #TODO: Convert from i,j coordinates to a single integer that identifies a grid cell
-    return 0
+    return j + i * x_size
 
 def cell_index_to_ij(cell_index):
     #TODO: Convert from cell_index to (i,j) coordinates
-    return 0, 0
+    i = '%.0f'%(cell_index / x_size)
+    j = cell_index % x_size
+    return i, j
 
 
 def cost(cell_index_from, cell_index_to):
