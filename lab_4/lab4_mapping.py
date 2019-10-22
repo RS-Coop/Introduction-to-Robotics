@@ -19,7 +19,9 @@ IR_left = 0
 IR_right = 0
 PING_dist = 0
 #DONE: Create data structure to hold map representation
-map_array = np.zeros([10, 20]);
+y_size = 10
+x_size = 20
+map_array = np.zeros([y_size, x_size]);
 
 # TODO: Use these variables to hold your publishers and subscribers
 publisher_motor = None
@@ -185,11 +187,13 @@ def display_map():
 
 def ij_to_cell_index(i,j):
     #TODO: Convert from i,j coordinates to a single integer that identifies a grid cell
-    return 0
+    return j + i * x_size
 
 def cell_index_to_ij(cell_index):
     #TODO: Convert from cell_index to (i,j) coordinates
-    return 0, 0
+    i = '%.0f'%(cell_index / x_size)
+    j = cell_index % x_size
+    return i, j
 
 
 def cost(cell_index_from, cell_index_to):
