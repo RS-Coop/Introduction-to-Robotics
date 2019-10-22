@@ -19,7 +19,7 @@ IR_left = 0
 IR_right = 0
 PING_dist = 0
 #DONE: Create data structure to hold map representation
-map_array = np.zeros([10, 20]);
+map_array = np.zeros([42, 60]);
 
 # TODO: Use these variables to hold your publishers and subscribers
 publisher_motor = None
