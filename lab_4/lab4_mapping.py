@@ -82,7 +82,7 @@ def main():
         publisher_motor.publish(msg)
 
         #DONE: Implement loop closure here
-        if IR_right > IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_center > IR_THRESHOLD:
+        if IR_right < IR_THRESHOLD and IR_left < IR_THRESHOLD and IR_center < IR_THRESHOLD:
             rospy.loginfo("Loop Closure Triggered")
             reset = Pose2D()
             reset.x = 0
@@ -174,7 +174,7 @@ def convert_ultra_to_world(ultra_dist):
     return convert_robot_coords_to_world(convert_ultrasonic_to_robot_coords(ultra_dist))
 
 def world_to_map(x,y):
-    return math.ceil(y), math.ceil(x)
+    return math.floor(y), math.floor(x)
 
 def map_to_world(i,j):
     return j+0.5, i+0.5
@@ -193,18 +193,18 @@ def display_map():
     plt.show()
 
 def ij_to_cell_index(i,j):
-    #TODO: Convert from i,j coordinates to a single integer that identifies a grid cell
+    #DONE: Convert from i,j coordinates to a single integer that identifies a grid cell
     return j + i * x_size
 
 def cell_index_to_ij(cell_index):
-    #TODO: Convert from cell_index to (i,j) coordinates
+    #DONE: Convert from cell_index to (i,j) coordinates
     i = '%.0f'%(cell_index / x_size)
     j = cell_index % x_size
     return i, j
 
 
 def cost(cell_index_from, cell_index_to):
-    #TODO: Return cost of traversing from one cell to another
+    #DONE: Return cost of traversing from one cell to another
     return 0
 
 if __name__ == "__main__":
