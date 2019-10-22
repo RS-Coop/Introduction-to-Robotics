@@ -50,11 +50,11 @@ def main():
 
         #Ping the ultrasonic
         publisher_ping.publish(Empty())
-        rospy.loginfo("Ping:%s",PING_dist)
-        try:
-            convert_ultra_to_world(PING_dist)
-        except:
-            pass
+        # rospy.loginfo("Ping:%s",PING_dist)
+        # try:
+        #     convert_ultra_to_world(PING_dist)
+        # except:
+        #     pass
 
         #DONE: Implement line following code here
         #      To create a message for changing motor speed, use Float32MultiArray()
@@ -131,6 +131,8 @@ def callback_update_state(data):
     SRV_angle = state_dict['servo']
     try:
         PING_dist = state_dict['ping']
+        x, y = convert_ultra_to_world(PING_dist)
+        populate_map_from_ping(x, y)
     except:
         PING_dist = None
     IR_FULL = state_dict['light_sensors']
@@ -181,7 +183,8 @@ def map_to_world(i,j):
 
 def populate_map_from_ping(x_ping, y_ping):
     #DONE: Given world coordinates of an object detected via ping, fill in the corresponding part of the map
-    map_array[x_ping, y_ping] = 1
+    i, j = world_to_map(x_ping, y_ping)
+    map_array[i, j] = 1
 
 def display_map():
     cmap = colors.ListedColormap(['blue', 'red'])
