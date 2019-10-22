@@ -139,6 +139,7 @@ def callback_update_state(data):
 
 def convert_ultrasonic_to_robot_coords(x_us):
     #DONE: Using US sensor reading and servo angle, return value in robot-centric coordinates
+    x_us = x_us/100.0
     x_r, y_r = 0., 0.
 
     x_r = x_us * math.cos(SRV_angle)
