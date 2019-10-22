@@ -172,8 +172,6 @@ def convert_ultra_to_world(ultra_dist):
     return convert_robot_coords_to_world(convert_ultrasonic_to_robot_coords(ultra_dist))
 
 def world_to_map(x,y):
-    i = 0
-    j = 0
     return i, j
 
 def map_to_world(i,j):
