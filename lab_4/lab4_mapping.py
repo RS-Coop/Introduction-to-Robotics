@@ -191,12 +191,8 @@ def map_to_world(i,j):
 def populate_map_from_ping(x_ping, y_ping):
     #DONE: Given world coordinates of an object detected via ping, fill in the corresponding part of the map
     i, j = world_to_map(x_ping, y_ping)
-<<<<<<< HEAD
     map_array[i, j] = 1
     rospy.loginfo("Object at %d,%d",i,j)
-=======
-    world_array[i, j] = 1
->>>>>>> b2e808cc3fc9b439bfa1cdef30d21037fcb9abdb
 
 def display_map(x):
     plt.close('all')
