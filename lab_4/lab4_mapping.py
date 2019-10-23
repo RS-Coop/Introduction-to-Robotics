@@ -21,7 +21,7 @@ PING_dist = 0
 #DONE: Create data structure to hold map representation
 y_size = 10
 x_size = 20
-map_array = np.zeros([y_size, x_size]);
+world_array = np.zeros([y_size, x_size]);
 
 # TODO: Use these variables to hold your publishers and subscribers
 publisher_motor = None
@@ -190,7 +190,7 @@ def map_to_world(i,j):
 def populate_map_from_ping(x_ping, y_ping):
     #DONE: Given world coordinates of an object detected via ping, fill in the corresponding part of the map
     i, j = world_to_map(x_ping, y_ping)
-    map_array[i, j] = 1
+    world_array[i, j] = 1
 
 def display_map():
     plt.close('all')
@@ -198,7 +198,7 @@ def display_map():
     bounds=[0,0.5,1]
 
     norm = colors.BoundaryNorm(bounds, cmap.N)
-    plt.imshow(map_array, interpolation='nearest', origin='lower', cmap=cmap, norm=norm)
+    plt.imshow(world_array, interpolation='nearest', origin='lower', cmap=cmap, norm=norm)
 
     plt.show()
 
