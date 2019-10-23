@@ -44,7 +44,9 @@ def main():
     rospy.init_node('sparki', anonymous=True)
     init()
 
-    rospy.Timer(rospy.Duration(10), display_map)
+    publisher_servo.publish(40)
+
+    # rospy.Timer(rospy.Duration(10), display_map)
 
     while not rospy.is_shutdown():
         #DONE: Implement CYCLE TIME
@@ -114,6 +116,7 @@ def init():
     subscriber_odometry = rospy.Subscriber('/sparki/odometry', Pose2D, callback_update_odometry)
     subscriber_state = rospy.Subscriber('/sparki/state', String, callback_update_state)
 
+    rospy.sleep(0.1)
     #DONE: Set up your initial odometry pose (pose2d_sparki_odometry) as a new Pose2D message object
     pose_init = Pose2D()
     pose_init.x = 0
@@ -122,7 +125,7 @@ def init():
     publisher_odom.publish(pose_init)
 
     #DONE: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
-    publisher_servo.publish(40)
+    publisher_servo.publish(45)
 
 def callback_update_odometry(data):
     # Receives geometry_msgs/Pose2D message
@@ -192,7 +195,7 @@ def populate_map_from_ping(x_ping, y_ping):
     i, j = world_to_map(x_ping, y_ping)
     map_array[i, j] = 1
 
-def display_map():
+def display_map(x):
     plt.close('all')
     cmap = colors.ListedColormap(['blue', 'red'])
     bounds=[0,0.5,1]
