@@ -32,7 +32,7 @@ subscriber_odometry = None
 subscriber_state = None
 
 # CONSTANTS
-IR_THRESHOLD = 500 # IR sensor threshold for detecting black track. Change as necessary.
+IR_THRESHOLD = 600 # IR sensor threshold for detecting black track. Change as necessary.
 CYCLE_TIME = 0.05 # In seconds
 
 def main():
@@ -63,12 +63,12 @@ def main():
         msg = Float32MultiArray()
         if IR_right < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_center > IR_THRESHOLD:
 	        #publish to move right
-            msg.data = [-1.0,1.0]
+            msg.data = [1.0,-1.0]
             #rospy.loginfo("Right Turn")
 
         elif IR_left < IR_THRESHOLD and IR_right > IR_THRESHOLD and IR_center > IR_THRESHOLD:
             #Publish to move left
-            msg.data = [1.0,-1.0]
+            msg.data = [-1.0,1.0]
             #rospy.loginfo("Left Turn")
 
         elif IR_center < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_right > IR_THRESHOLD:

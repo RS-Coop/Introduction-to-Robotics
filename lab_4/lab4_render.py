@@ -13,5 +13,5 @@ def img_render():
 if __name__ == '__main__':
     try:
         img_render()
-    except:
+    except rospy.ROSInterruptException:
         pass
