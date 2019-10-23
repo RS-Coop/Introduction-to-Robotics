@@ -32,7 +32,7 @@ subscriber_odometry = None
 subscriber_state = None
 
 # CONSTANTS
-IR_THRESHOLD = 600 # IR sensor threshold for detecting black track. Change as necessary.
+IR_THRESHOLD = 100 # IR sensor threshold for detecting black track. Change as necessary.
 CYCLE_TIME = 0.05 # In seconds
 
 def main():
@@ -61,6 +61,7 @@ def main():
         #      To create a message for changing motor speed, use Float32MultiArray()
         #      (e.g., msg = Float32MultiArray()     msg.data = [1.0,1.0]      publisher.pub(msg))
         msg = Float32MultiArray()
+        msg.data = [0.0,0.0]
         if IR_right < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_center > IR_THRESHOLD:
 	        #publish to move right
             msg.data = [1.0,-1.0]
