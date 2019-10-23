@@ -46,10 +46,11 @@ def main():
 
     while not rospy.is_shutdown():
         #DONE: Implement CYCLE TIME
-        rate = rospy.Rate(1/CYCLE_TIME)
+        rate = rospy.Rate(1.0/CYCLE_TIME)
 
         #Ping the ultrasonic
         publisher_ping.publish(Empty())
+        #Are updating map from within callback
         # rospy.loginfo("Ping:%s",PING_dist)
         # try:
         #     convert_ultra_to_world(PING_dist)
@@ -60,34 +61,36 @@ def main():
         #      To create a message for changing motor speed, use Float32MultiArray()
         #      (e.g., msg = Float32MultiArray()     msg.data = [1.0,1.0]      publisher.pub(msg))
         msg = Float32MultiArray()
-        # if IR_right < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_center > IR_THRESHOLD:
-	    #     #publish to move right
-        #     msg.data = [-1.0,1.0]
-        #     rospy.loginfo("Right Turn")
-        # elif IR_left < IR_THRESHOLD and IR_right > IR_THRESHOLD and IR_center > IR_THRESHOLD:
-        #     #Publish to move left
-        #     msg.data = [1.0,-1.0]
-        #     rospy.loginfo("Left Turn")
-        #
-        # elif IR_center < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_right > IR_THRESHOLD:
-	    #     #Publish to move forward
-        #     msg.data = [1.0,1.0]
-        #     rospy.loginfo("Forward")
-        #
+        if IR_right < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_center > IR_THRESHOLD:
+	        #publish to move right
+            msg.data = [-1.0,1.0]
+            #rospy.loginfo("Right Turn")
+
+        elif IR_left < IR_THRESHOLD and IR_right > IR_THRESHOLD and IR_center > IR_THRESHOLD:
+            #Publish to move left
+            msg.data = [1.0,-1.0]
+            #rospy.loginfo("Left Turn")
+
+        elif IR_center < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_right > IR_THRESHOLD:
+	        #Publish to move forward
+            msg.data = [1.0,1.0]
+            #rospy.loginfo("Forward")
+
         # else: #Only added this because it wasnt working
         #     msg.data = [0.0,0.0]
-        #     rospy.loginfo("Default")
-        msg.data = [1.0,1.0]
+        #     #rospy.loginfo("Default")
+
+        # msg.data = [1.0,1.0] #For debugging purposes.
 
         publisher_motor.publish(msg)
 
         #DONE: Implement loop closure here
         if IR_right < IR_THRESHOLD and IR_left < IR_THRESHOLD and IR_center < IR_THRESHOLD:
-            rospy.loginfo("Loop Closure Triggered")
+            #rospy.loginfo("Loop Closure Triggered")
             reset = Pose2D()
-            reset.x = 0
-            reset.y = 0
-            reset.theta = 0
+            reset.x = 0.0
+            reset.y = 0.0
+            reset.theta = 0.0
             publisher_odom.publish(reset)
 
         #DONE: Implement CYCLE TIME
@@ -116,7 +119,7 @@ def init():
     publisher_odom.publish(pose_init)
 
     #DONE: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
-    #publisher_servo.publish(45)
+    publisher_servo.publish(40)
 
 def callback_update_odometry(data):
     # Receives geometry_msgs/Pose2D message
@@ -149,7 +152,7 @@ def convert_ultrasonic_to_robot_coords(x_us):
     x_r = x_us * math.cos(SRV_angle)
     y_r = x_us * math.sin(SRV_angle)
 
-    rospy.loginfo("Robot coordinates:%s,%s",x_r,y_r)
+    # rospy.loginfo("Robot coordinates:%s,%s",x_r,y_r)
 
     return (x_r, y_r)
 
@@ -166,9 +169,9 @@ def convert_robot_coords_to_world(pos_vec):
     x_w = x_r*math.cos(_theta) - y_r*math.sin(_theta) + _x
     y_w = x_r*math.sin(_theta) + y_r*math.cos(_theta) + _y
 
-    rospy.loginfo("Robot position:%s,%s",_x,_y)
+    # rospy.loginfo("Robot position:%s,%s",_x,_y)
 
-    rospy.loginfo("World coordinates:%s,%s",x_w,y_w)
+    # rospy.loginfo("World coordinates:%s,%s",x_w,y_w)
 
     return x_w, y_w
 

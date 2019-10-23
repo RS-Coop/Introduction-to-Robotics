@@ -28,7 +28,7 @@ CYCLE_TIME = 0.05 # 50ms cycle time
 MAP_RESOLUTION = 0.0015 # meters per pixel
 MAP_SIZE_X = 1200 # Default map size in pixels
 MAP_SIZE_Y = 800 # Default map size in pixels
-SPARKI_SIZE_RADIUS = 0.08 # 0.08m radius == 6.29in diameter 
+SPARKI_SIZE_RADIUS = 0.08 # 0.08m radius == 6.29in diameter
 SPARKI_ULTRASONIC_MAX_DIST = .75 # 0.75m max range for ultrasonic sensor
 
 # ***** SERVO POSITIONS ***** #
@@ -36,7 +36,7 @@ SPARKI_SERVO_LEFT = 80
 SPARKI_SERVO_CENTER = 0
 SPARKI_SERVO_RIGHT = -80
 SPARKI_SPEED = 0.0278 # 100% speed in m/s
-SPARKI_AXLE_DIAMETER = 0.085 # Distance between wheels, meters 
+SPARKI_AXLE_DIAMETER = 0.085 # Distance between wheels, meters
 SPARKI_WHEEL_RADIUS = 0.03 # Radius of wheels, meters
 
 
@@ -204,7 +204,7 @@ def init(args):
     g_sub_ping = rospy.Subscriber('/%s/ping_command' % g_namespace, Empty, recv_ping)
     g_sub_odom = rospy.Subscriber('/%s/set_odometry' % g_namespace, Pose2D, set_odometry)
     g_sub_servo = rospy.Subscriber('/%s/set_servo' % g_namespace, Int16, set_servo)
-    g_sub_render = rospy.Subscriber('/%s/render_sim' % g_namespace, Empty, recv_render)  
+    g_sub_render = rospy.Subscriber('/%s/render_sim' % g_namespace, Empty, recv_render)
 
     g_tk_window = tk.Tk()
     img = ImageTk.PhotoImage('RGB', (MAP_SIZE_X, MAP_SIZE_Y))
@@ -233,8 +233,8 @@ def update_and_publish_odometry(pub, time_delta):
   left_wheel_dist = (g_motors[0] * time_delta * SPARKI_SPEED)
   right_wheel_dist = (g_motors[1] * time_delta * SPARKI_SPEED)
 
-  g_pose.x += math.cos(g_pose.theta) * (left_wheel_dist+right_wheel_dist)/2. 
-  g_pose.y += math.sin(g_pose.theta) * (left_wheel_dist+right_wheel_dist)/2. 
+  g_pose.x += math.cos(g_pose.theta) * (left_wheel_dist+right_wheel_dist)/2.
+  g_pose.y += math.sin(g_pose.theta) * (left_wheel_dist+right_wheel_dist)/2.
   g_pose.theta += (right_wheel_dist - left_wheel_dist) / SPARKI_AXLE_DIAMETER
 
   g_pose.x = min(MAP_SIZE_X, max(g_pose.x, 0))
@@ -255,7 +255,7 @@ def render_robot_and_scene():
     yw = int(maxy - miny)
 
     render_img = Image.new('RGB', (xw, yw), color = 'white')
-    
+
     robot_pixel_coords = np.array( [int(g_pose.x / MAP_RESOLUTION), int(g_pose.y / MAP_RESOLUTION)] )
 
     for y_coord in range(0,MAP_SIZE_Y):
@@ -280,7 +280,7 @@ def render_robot_and_scene():
     sparki_pixel_radius = int(SPARKI_SIZE_RADIUS / MAP_RESOLUTION)
     for pct in range(0, 100):
       dist = pct/100. * sparki_pixel_radius / 2
-      for width in range(-5,6,1):          
+      for width in range(-5,6,1):
           pixel_coord = [ int(robot_pixel_coords[0] + width*math.cos(g_pose.theta) + math.cos(g_pose.theta + g_servo_angle) * dist), int(robot_pixel_coords[1] + width*math.sin(g_pose.theta) + math.sin(g_pose.theta + g_servo_angle) * dist) ]
           render_img.putpixel( pixel_coord, (255, 255, 0) )
 
