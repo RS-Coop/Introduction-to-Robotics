@@ -4,7 +4,7 @@ from std_msgs.msg import Empty
 def img_render():
     pub = rospy.Publisher('/sparki/render_sim', Empty, queue_size=1)
     rospy.init_node('renderer', anonymous=True)
-    rate = rospy.Rate(0.5)
+    rate = rospy.Rate(5)
 
     while not rospy.is_shutdown():
         pub.publish(Empty())

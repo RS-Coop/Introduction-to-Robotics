@@ -44,6 +44,8 @@ def main():
     rospy.init_node('sparki', anonymous=True)
     init()
 
+    rospy.Timer(rospy.Duration(10), display_map)
+
     while not rospy.is_shutdown():
         #DONE: Implement CYCLE TIME
         rate = rospy.Rate(1.0/CYCLE_TIME)
