@@ -191,6 +191,7 @@ def populate_map_from_ping(x_ping, y_ping):
     map_array[i, j] = 1
 
 def display_map():
+    plt.close('all')
     cmap = colors.ListedColormap(['blue', 'red'])
     bounds=[0,0.5,1]
 
