@@ -44,8 +44,6 @@ def main():
     rospy.init_node('sparki', anonymous=True)
     init()
 
-    publisher_servo.publish(40)
-
     # rospy.Timer(rospy.Duration(10), display_map)
 
     while not rospy.is_shutdown():
@@ -68,12 +66,12 @@ def main():
         msg.data = [0.0,0.0]
         if IR_right < IR_THRESHOLD and IR_right < IR_left:
 	        #publish to move right
-            msg.data = [1.0,-1.0]
+            msg.data = [0.8,-1.0]
             #rospy.loginfo("Right Turn")
 
         elif IR_left < IR_THRESHOLD and IR_left < IR_right:
             #Publish to move left
-            msg.data = [-1.0,1.0]
+            msg.data = [-1.0,0.8]
             #rospy.loginfo("Left Turn")
 
         elif IR_center < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_right > IR_THRESHOLD:
@@ -118,14 +116,14 @@ def init():
 
     rospy.sleep(0.1)
     #DONE: Set up your initial odometry pose (pose2d_sparki_odometry) as a new Pose2D message object
-    pose_init = Pose2D()
-    pose_init.x = 0
-    pose_init.y = 0
-    pose_init.theta = 0
-    publisher_odom.publish(pose_init)
+    # pose_init = Pose2D()
+    # pose_init.x = 0.0
+    # pose_init.y = 0.0
+    # pose_init.theta = 0.0
+    # publisher_odom.publish(pose_init)
 
     #DONE: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
-    publisher_servo.publish(45)
+    publisher_servo.publish(Int16(45))
 
 def callback_update_odometry(data):
     # Receives geometry_msgs/Pose2D message
@@ -194,6 +192,7 @@ def populate_map_from_ping(x_ping, y_ping):
     #DONE: Given world coordinates of an object detected via ping, fill in the corresponding part of the map
     i, j = world_to_map(x_ping, y_ping)
     map_array[i, j] = 1
+    rospy.loginfo("Object at %d,%d",i,j)
 
 def display_map(x):
     plt.close('all')
