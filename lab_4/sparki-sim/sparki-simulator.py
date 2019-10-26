@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# CSCI 3302 Sparki Simulator Version 1.0
+# CSCI 3302 Sparki Simulator Version 1.1
 # Hastily authored by Brad Hayes (bradley.hayes@colorado.edu)
 # If getting ImageTk errors, run: sudo apt-get install python-imaging-tk
 
@@ -28,7 +28,7 @@ CYCLE_TIME = 0.05 # 50ms cycle time
 MAP_RESOLUTION = 0.0015 # meters per pixel
 MAP_SIZE_X = 1200 # Default map size in pixels
 MAP_SIZE_Y = 800 # Default map size in pixels
-SPARKI_SIZE_RADIUS = 0.08 # 0.08m radius == 6.29in diameter
+SPARKI_SIZE_RADIUS = 0.08 # 0.08m radius == 6.29in diameter 
 SPARKI_ULTRASONIC_MAX_DIST = .75 # 0.75m max range for ultrasonic sensor
 
 # ***** SERVO POSITIONS ***** #
@@ -36,9 +36,10 @@ SPARKI_SERVO_LEFT = 80
 SPARKI_SERVO_CENTER = 0
 SPARKI_SERVO_RIGHT = -80
 SPARKI_SPEED = 0.0278 # 100% speed in m/s
-SPARKI_AXLE_DIAMETER = 0.085 # Distance between wheels, meters
+SPARKI_AXLE_DIAMETER = 0.085 # Distance between wheels, meters 
 SPARKI_WHEEL_RADIUS = 0.03 # Radius of wheels, meters
 
+MAP_PADDING = round(SPARKI_SIZE_RADIUS / MAP_RESOLUTION)
 
 
 # ROBOT STATE VARS
@@ -65,6 +66,7 @@ g_sub_render = None
 g_tk_window = None
 g_tk_label = None
 g_render_requested = None
+g_render_image_base = None
 
 def recv_motor_command(msg):
     global g_motors
@@ -114,8 +116,8 @@ def get_ir_reading():
     for i, coord in enumerate([left_line_ir_point, left_ir_point, center_ir_point, right_ir_point, right_line_ir_point]):
       pixel_coords[i] = (int(coord[0] / MAP_RESOLUTION), int(coord[1] / MAP_RESOLUTION))
       if pixel_coords[i][0] < 0 or pixel_coords[i][0] >= MAP_SIZE_X or pixel_coords[i][1] < 0 or pixel_coords[i][1] >= MAP_SIZE_Y:
-        rospy.logerr("IR Sensor is off the map! Coords: %s" % (str(pixel_coords)))
-        return [0] * 5
+        rospy.logerr("IR Sensor is off the map! Coords: %s" % (str(pixel_coords[i])))
+        return [1000] * 5
 
     # Look up pixel coords on world map
     ir_readings = [1000] * 5
@@ -171,7 +173,7 @@ def init(args):
     # Initialize all publishers, subscribers, state variables
     global g_namespace, g_pose, g_ir_sensors, g_us_sensor, g_world_starting_pose, g_world_obstacles, g_world_surface, g_motors, g_ping_requested, g_servo_angle
     global g_pub_state, g_pub_odom, g_sub_motors, g_sub_ping, g_sub_odom, g_sub_servo, g_render_requested, g_sub_render
-    global g_tk_window, g_tk_label
+    global g_tk_window, g_tk_label, g_render_image_base
 
     g_namespace = args.namespace
 
@@ -204,7 +206,7 @@ def init(args):
     g_sub_ping = rospy.Subscriber('/%s/ping_command' % g_namespace, Empty, recv_ping)
     g_sub_odom = rospy.Subscriber('/%s/set_odometry' % g_namespace, Pose2D, set_odometry)
     g_sub_servo = rospy.Subscriber('/%s/set_servo' % g_namespace, Int16, set_servo)
-    g_sub_render = rospy.Subscriber('/%s/render_sim' % g_namespace, Empty, recv_render)
+    g_sub_render = rospy.Subscriber('/%s/render_sim' % g_namespace, Empty, recv_render)  
 
     g_tk_window = tk.Tk()
     img = ImageTk.PhotoImage('RGB', (MAP_SIZE_X, MAP_SIZE_Y))
@@ -212,6 +214,16 @@ def init(args):
     g_tk_label.pack(fill="both", expand="yes")
 
     g_render_requested = True
+    g_render_image_base = Image.new('RGB', (MAP_SIZE_X, MAP_SIZE_Y), color = 'white')
+    for y_coord in range(0,MAP_SIZE_Y):
+      for x_coord in range(0, MAP_SIZE_X):
+        # Add line-following diagram as shades of black-to-red
+        if g_world_surface[y_coord, x_coord] > 0:
+          g_render_image_base.putpixel((x_coord, y_coord), (255-int(g_world_surface[y_coord, x_coord]/5),0,0))
+
+        # Add objects as shades of black-to-green
+        if g_world_obstacles[y_coord, x_coord] > 0:
+          g_render_image_base.putpixel((x_coord, y_coord), (0,255-int(g_world_surface[y_coord, x_coord]/5),0))
 
 def update_and_publish_state(pub):
   global g_pose, g_ir_sensors, g_us_sensor, g_world_starting_pose, g_world_obstacles, g_motors, g_ping_requested, g_servo_angle
@@ -233,40 +245,24 @@ def update_and_publish_odometry(pub, time_delta):
   left_wheel_dist = (g_motors[0] * time_delta * SPARKI_SPEED)
   right_wheel_dist = (g_motors[1] * time_delta * SPARKI_SPEED)
 
-  g_pose.x += math.cos(g_pose.theta) * (left_wheel_dist+right_wheel_dist)/2.
-  g_pose.y += math.sin(g_pose.theta) * (left_wheel_dist+right_wheel_dist)/2.
+  g_pose.x += math.cos(g_pose.theta) * (left_wheel_dist+right_wheel_dist)/2. 
+  g_pose.y += math.sin(g_pose.theta) * (left_wheel_dist+right_wheel_dist)/2. 
   g_pose.theta += (right_wheel_dist - left_wheel_dist) / SPARKI_AXLE_DIAMETER
 
-  g_pose.x = min(MAP_SIZE_X, max(g_pose.x, 0))
-  g_pose.y = min(MAP_SIZE_Y, max(g_pose.y, 0))
+  g_pose.x = min(MAP_SIZE_X*MAP_RESOLUTION, max(g_pose.x, 0))
+  g_pose.y = min(MAP_SIZE_Y*MAP_RESOLUTION, max(g_pose.y, 0))
 
   pub_pose = copy.copy(g_pose)
+  pub_pose.y = MAP_SIZE_Y * MAP_RESOLUTION - pub_pose.y
   pub_pose.theta = -pub_pose.theta # Negate theta
   pub.publish(pub_pose)
 
 def render_robot_and_scene():
-    global SPARKI_SIZE_RADIUS, g_tk_window, g_tk_label
-    minx = round(-SPARKI_SIZE_RADIUS / MAP_RESOLUTION)
-    miny = round(-SPARKI_SIZE_RADIUS / MAP_RESOLUTION)
-    maxx = round(MAP_SIZE_X + SPARKI_SIZE_RADIUS/MAP_RESOLUTION)
-    maxy = round(MAP_SIZE_Y + SPARKI_SIZE_RADIUS/MAP_RESOLUTION)
+    global SPARKI_SIZE_RADIUS, g_tk_window, g_tk_label, g_render_image_base
 
-    xw = int(maxx - minx)
-    yw = int(maxy - miny)
-
-    render_img = Image.new('RGB', (xw, yw), color = 'white')
-
+    render_img = copy.copy(g_render_image_base)
+    
     robot_pixel_coords = np.array( [int(g_pose.x / MAP_RESOLUTION), int(g_pose.y / MAP_RESOLUTION)] )
-
-    for y_coord in range(0,MAP_SIZE_Y):
-      for x_coord in range(0, MAP_SIZE_X):
-        # Add line-following diagram as shades of black-to-red
-        if g_world_surface[y_coord, x_coord] > 0:
-          render_img.putpixel((x_coord, y_coord), (255-int(g_world_surface[y_coord, x_coord]/5),0,0))
-
-        # Add objects as shades of black-to-green
-        if g_world_obstacles[y_coord, x_coord] > 0:
-          render_img.putpixel((x_coord, y_coord), (0,255-int(g_world_surface[y_coord, x_coord]/5),0))
 
     # Add robot as blue
     robot_y_range = [int(robot_pixel_coords[1] - SPARKI_SIZE_RADIUS/MAP_RESOLUTION - 1), int(robot_pixel_coords[1] + SPARKI_SIZE_RADIUS/MAP_RESOLUTION + 1)]
@@ -280,7 +276,7 @@ def render_robot_and_scene():
     sparki_pixel_radius = int(SPARKI_SIZE_RADIUS / MAP_RESOLUTION)
     for pct in range(0, 100):
       dist = pct/100. * sparki_pixel_radius / 2
-      for width in range(-5,6,1):
+      for width in range(-5,6,1):          
           pixel_coord = [ int(robot_pixel_coords[0] + width*math.cos(g_pose.theta) + math.cos(g_pose.theta + g_servo_angle) * dist), int(robot_pixel_coords[1] + width*math.sin(g_pose.theta) + math.sin(g_pose.theta + g_servo_angle) * dist) ]
           render_img.putpixel( pixel_coord, (255, 255, 0) )
 
@@ -288,12 +284,12 @@ def render_robot_and_scene():
     front_of_robot_pixel_coord = [ int(robot_pixel_coords[0] + math.cos(g_pose.theta)* sparki_pixel_radius), int(robot_pixel_coords[1] + math.sin(g_pose.theta)*sparki_pixel_radius) ]
     for y_coord in range(front_of_robot_pixel_coord[1] - 3, front_of_robot_pixel_coord[1] + 3 + 1):
       for x_coord in range(front_of_robot_pixel_coord[0] - 3, front_of_robot_pixel_coord[0] + 3 + 1):
-        if x_coord < 0 or y_coord < 0 or x_coord > MAP_SIZE_X or y_coord > MAP_SIZE_Y:
+        if x_coord < 0 or y_coord < 0 or x_coord >= MAP_SIZE_X or y_coord >= MAP_SIZE_Y:
           continue
         render_img.putpixel( (x_coord, y_coord), (0, 255, 255) )
 
     # Display on screen
-    img = ImageTk.PhotoImage(render_img)
+    img = ImageTk.PhotoImage(render_img) #render_img.resize((320,240), Image.ANTIALIAS))
     g_tk_label.configure(image=img)
     g_tk_label.image = img
     g_tk_window.update_idletasks()
@@ -313,7 +309,11 @@ def launch_simulator(args):
         # Update and Publish Sensors
         update_and_publish_state(g_pub_state)
         if g_render_requested is True:
+          render_start_time = time.time()
           render_robot_and_scene()
+          render_end_time = time.time()
+          cycle_start += render_end_time - render_start_time
+          last_time += render_end_time - render_start_time
           g_render_requested = False
         if CYCLE_TIME-(time.time()-cycle_start) < 0:
           rospy.loginfo("CYCLE TIME over by: %f" % (CYCLE_TIME-(time.time()-cycle_start)))
