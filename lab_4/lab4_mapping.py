@@ -19,8 +19,8 @@ IR_left = 0
 IR_right = 0
 PING_dist = 0
 #DONE: Create data structure to hold map representation
-y_size = 10
-x_size = 20
+y_size = 42
+x_size = 60
 world_array = np.zeros([y_size, x_size]);
 
 # TODO: Use these variables to hold your publishers and subscribers
@@ -45,6 +45,7 @@ def main():
     init()
 
     # rospy.Timer(rospy.Duration(10), display_map)
+    rospy.Timer(rospy.Duration(10), printArr)
 
     while not rospy.is_shutdown():
         #DONE: Implement CYCLE TIME
@@ -66,12 +67,12 @@ def main():
         msg.data = [0.0,0.0]
         if IR_right < IR_THRESHOLD and IR_right < IR_left:
 	        #publish to move right
-            msg.data = [0.8,-1.0]
+            msg.data = [0.1,-1.0]
             #rospy.loginfo("Right Turn")
 
         elif IR_left < IR_THRESHOLD and IR_left < IR_right:
             #Publish to move left
-            msg.data = [-1.0,0.8]
+            msg.data = [-1.0,0.1]
             #rospy.loginfo("Left Turn")
 
         elif IR_center < IR_THRESHOLD and IR_left > IR_THRESHOLD and IR_right > IR_THRESHOLD:
@@ -89,7 +90,7 @@ def main():
 
         #DONE: Implement loop closure here
         if IR_right < IR_THRESHOLD and IR_left < IR_THRESHOLD and IR_center < IR_THRESHOLD:
-            #rospy.loginfo("Loop Closure Triggered")
+            rospy.loginfo("Loop Closure Triggered")
             reset = Pose2D()
             reset.x = 0.0
             reset.y = 0.0
@@ -136,21 +137,25 @@ def callback_update_state(data):
     state_dict = json.loads(data.data) # Creates a dictionary object from the JSON string received from the state topic
     #DONE: Load data into your program's local state variables
     SRV_angle = state_dict['servo']
-    try:
-        PING_dist = state_dict['ping']
-        x, y = convert_ultra_to_world(PING_dist)
-        populate_map_from_ping(x, y)
-    except:
-        PING_dist = None
     IR_FULL = state_dict['light_sensors']
     IR_left = IR_FULL[1]
     IR_center = IR_FULL[2]
     IR_right = IR_FULL[3]
+    try:
+        PING_dist = state_dict['ping']
+        rospy.loginfo('Object: %f',PING_dist)
+        x, y = convert_ultra_to_world(PING_dist)
+        rospy.loginfo('Object Loc: %f,%f',x,y)
+        populate_map_from_ping(x, y)
+    except:
+        rospy.loginfo('No object')
+        PING_dist = None
 
 
 def convert_ultrasonic_to_robot_coords(x_us):
+    global SRV_angle
     #DONE: Using US sensor reading and servo angle, return value in robot-centric coordinates
-    x_us = x_us/100.0
+    # x_us_m = x_us/100.0 #Dont need this becuase simulator is doing meters.
     x_r, y_r = 0., 0.
 
     x_r = x_us * math.cos(SRV_angle)
@@ -161,6 +166,7 @@ def convert_ultrasonic_to_robot_coords(x_us):
     return (x_r, y_r)
 
 def convert_robot_coords_to_world(pos_vec):
+    global pose2d_sparki_odometry
     #DONE: Using odometry, convert robot-centric coordinates into world coordinates
     x_r, y_r = pos_vec
     x_w, y_w = 0., 0.
@@ -183,18 +189,23 @@ def convert_ultra_to_world(ultra_dist):
     return convert_robot_coords_to_world(convert_ultrasonic_to_robot_coords(ultra_dist))
 
 def world_to_map(x,y):
-    return math.floor(y), math.floor(x)
+    x_cm = 100.0*x #Convert to cm for map
+    y_cm = 100.0*y
+    return math.floor(y_cm), math.floor(x_cm)
 
 def map_to_world(i,j):
-    return j+0.5, i+0.5
+    return (j+0.5)/100.0, (i+0.5)/100.0 #Put in center of map region and convert to meters
 
 def populate_map_from_ping(x_ping, y_ping):
+    global world_array
     #DONE: Given world coordinates of an object detected via ping, fill in the corresponding part of the map
+    # rospy.loginfo('converting to map')
     i, j = world_to_map(x_ping, y_ping)
-    map_array[i, j] = 1
     rospy.loginfo("Object at %d,%d",i,j)
+    world_array[i, j] = 1
 
 def display_map(x):
+    global world_array
     plt.close('all')
     cmap = colors.ListedColormap(['blue', 'red'])
     bounds=[0,0.5,1]
@@ -222,6 +233,10 @@ def cost(cell_index_from, cell_index_to):
     start_i, start_j = cell_index_to_ij(cell_index_from)
     dest_i, dest_j = cell_index_to_ij(cell_index_to)
     return abs(start_i - dest_i) + abs(start_j - dest_j)
+
+def printArr():
+    global world_array
+    print(world_array)
 
 if __name__ == "__main__":
     main()
