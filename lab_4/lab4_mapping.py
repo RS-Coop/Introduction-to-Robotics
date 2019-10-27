@@ -19,8 +19,8 @@ IR_left = 0
 IR_right = 0
 PING_dist = 0
 #DONE: Create data structure to hold map representation
-y_size = 42
-x_size = 60
+y_size = 200
+x_size = 200
 world_array = np.zeros([y_size, x_size]);
 
 # TODO: Use these variables to hold your publishers and subscribers
@@ -45,7 +45,7 @@ def main():
     init()
 
     # rospy.Timer(rospy.Duration(10), display_map)
-    rospy.Timer(rospy.Duration(10), printArr)
+    # rospy.Timer(rospy.Duration(10), printArr)
 
     while not rospy.is_shutdown():
         #DONE: Implement CYCLE TIME
@@ -115,7 +115,7 @@ def init():
     subscriber_odometry = rospy.Subscriber('/sparki/odometry', Pose2D, callback_update_odometry)
     subscriber_state = rospy.Subscriber('/sparki/state', String, callback_update_state)
 
-    rospy.sleep(0.1)
+    rospy.sleep(0.5)
     #DONE: Set up your initial odometry pose (pose2d_sparki_odometry) as a new Pose2D message object
     # pose_init = Pose2D()
     # pose_init.x = 0.0
@@ -143,10 +143,11 @@ def callback_update_state(data):
     IR_right = IR_FULL[3]
     try:
         PING_dist = state_dict['ping']
-        rospy.loginfo('Object: %f',PING_dist)
-        x, y = convert_ultra_to_world(PING_dist)
-        rospy.loginfo('Object Loc: %f,%f',x,y)
-        populate_map_from_ping(x, y)
+        if PING_dist >= 0:
+            rospy.loginfo('Object: %f',PING_dist)
+            x, y = convert_ultra_to_world(PING_dist)
+            # rospy.loginfo('Object Loc: %f,%f',x,y)
+            populate_map_from_ping(x, y)
     except:
         rospy.loginfo('No object')
         PING_dist = None
@@ -179,7 +180,7 @@ def convert_robot_coords_to_world(pos_vec):
     x_w = x_r*math.cos(_theta) - y_r*math.sin(_theta) + _x
     y_w = x_r*math.sin(_theta) + y_r*math.cos(_theta) + _y
 
-    # rospy.loginfo("Robot position:%s,%s",_x,_y)
+    rospy.loginfo("Robot position:%s,%s",_x,_y)
 
     # rospy.loginfo("World coordinates:%s,%s",x_w,y_w)
 
@@ -234,7 +235,7 @@ def cost(cell_index_from, cell_index_to):
     dest_i, dest_j = cell_index_to_ij(cell_index_to)
     return abs(start_i - dest_i) + abs(start_j - dest_j)
 
-def printArr():
+def printArr(x):
     global world_array
     print(world_array)
 
