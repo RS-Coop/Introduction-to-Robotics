@@ -21,7 +21,7 @@ PING_dist = 0
 #DONE: Create data structure to hold map representation
 y_size = 200
 x_size = 200
-world_array = np.zeros([y_size, x_size]);
+world_array = np.zeros([y_size, x_size])
 
 # TODO: Use these variables to hold your publishers and subscribers
 publisher_motor = None
@@ -44,7 +44,7 @@ def main():
     rospy.init_node('sparki', anonymous=True)
     init()
 
-    # rospy.Timer(rospy.Duration(10), display_map)
+    rospy.Timer(rospy.Duration(10), display_map)
     # rospy.Timer(rospy.Duration(10), printArr)
 
     while not rospy.is_shutdown():
@@ -133,7 +133,7 @@ def callback_update_odometry(data):
     pose2d_sparki_odometry = data
 
 def callback_update_state(data):
-    global SRV_angle, IR_left, IR_center, IR_right, PING_dist
+    global SRV_angle, IR_left, IR_center, IR_right, PING_dist, world_array
     state_dict = json.loads(data.data) # Creates a dictionary object from the JSON string received from the state topic
     #DONE: Load data into your program's local state variables
     SRV_angle = state_dict['servo']
@@ -192,7 +192,7 @@ def convert_ultra_to_world(ultra_dist):
 def world_to_map(x,y):
     x_cm = 100.0*x #Convert to cm for map
     y_cm = 100.0*y
-    return math.floor(y_cm), math.floor(x_cm)
+    return int(math.floor(y_cm)), int(math.floor(x_cm))
 
 def map_to_world(i,j):
     return (j+0.5)/100.0, (i+0.5)/100.0 #Put in center of map region and convert to meters
@@ -203,18 +203,25 @@ def populate_map_from_ping(x_ping, y_ping):
     # rospy.loginfo('converting to map')
     i, j = world_to_map(x_ping, y_ping)
     rospy.loginfo("Object at %d,%d",i,j)
-    world_array[i, j] = 1
+
+    try:
+        world_array[i, j] = 1
+    except BaseException as e:
+        rospy.loginfo("ERROR: %s", e)
+    
+    rospy.loginfo("World Check: %d", world_array[i, j])
 
 def display_map(x):
     global world_array
-    plt.close('all')
     cmap = colors.ListedColormap(['blue', 'red'])
     bounds=[0,0.5,1]
 
     norm = colors.BoundaryNorm(bounds, cmap.N)
     plt.imshow(world_array, interpolation='nearest', origin='lower', cmap=cmap, norm=norm)
 
-    plt.show()
+    plt.draw()
+    plt.pause(0.0001)
+    plt.clf()
 
 def ij_to_cell_index(i,j):
     #DONE: Convert from i,j coordinates to a single integer that identifies a grid cell
