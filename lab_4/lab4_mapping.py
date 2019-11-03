@@ -124,7 +124,7 @@ def init():
     # publisher_odom.publish(pose_init)
 
     #DONE: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
-    publisher_servo.publish(Int16(45))
+    publisher_servo.publish(Int16(90))
 
 def callback_update_odometry(data):
     # Receives geometry_msgs/Pose2D message
@@ -136,7 +136,7 @@ def callback_update_state(data):
     global SRV_angle, IR_left, IR_center, IR_right, PING_dist, world_array
     state_dict = json.loads(data.data) # Creates a dictionary object from the JSON string received from the state topic
     #DONE: Load data into your program's local state variables
-    SRV_angle = state_dict['servo']
+    SRV_angle = math.radians(state_dict['servo'])
     IR_FULL = state_dict['light_sensors']
     IR_left = IR_FULL[1]
     IR_center = IR_FULL[2]
@@ -161,8 +161,8 @@ def convert_ultrasonic_to_robot_coords(x_us):
 
     x_r = x_us * math.cos(SRV_angle)
     y_r = x_us * math.sin(SRV_angle)
-
-    # rospy.loginfo("Robot coordinates:%s,%s",x_r,y_r)
+    rospy.loginfo("Servo angle: %s", SRV_angle)
+    rospy.loginfo("Robot coordinates:%s,%s",x_r,y_r)
 
     return (x_r, y_r)
 
@@ -182,7 +182,7 @@ def convert_robot_coords_to_world(pos_vec):
 
     rospy.loginfo("Robot position:%s,%s",_x,_y)
 
-    # rospy.loginfo("World coordinates:%s,%s",x_w,y_w)
+    rospy.loginfo("World coordinates:%s,%s",x_w,y_w)
 
     return x_w, y_w
 
