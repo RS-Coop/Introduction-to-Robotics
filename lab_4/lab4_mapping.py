@@ -124,12 +124,8 @@ def init():
     # publisher_odom.publish(pose_init)
 
     #DONE: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
-<<<<<<< HEAD
     publisher_servo.publish(Int16(80))
 
-=======
-    publisher_servo.publish(Int16(90))
->>>>>>> 6113895e476a70abe8030f8e779af733f9b6b9d9
 
 def callback_update_odometry(data):
     # Receives geometry_msgs/Pose2D message
@@ -142,12 +138,7 @@ def callback_update_state(data):
     global SRV_angle, IR_left, IR_center, IR_right, PING_dist, world_array
     state_dict = json.loads(data.data) # Creates a dictionary object from the JSON string received from the state topic
     #DONE: Load data into your program's local state variables
-<<<<<<< HEAD
-    SRV_angle = state_dict['servo']
-    SRV_angle = math.radians(SRV_angle)
-=======
     SRV_angle = math.radians(state_dict['servo'])
->>>>>>> 6113895e476a70abe8030f8e779af733f9b6b9d9
     IR_FULL = state_dict['light_sensors']
     IR_left = IR_FULL[1]
     IR_center = IR_FULL[2]
