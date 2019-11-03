@@ -19,8 +19,8 @@ IR_left = 0
 IR_right = 0
 PING_dist = 0
 #DONE: Create data structure to hold map representation
-y_size = 200
-x_size = 200
+y_size = 120
+x_size = 180
 world_array = np.zeros([y_size, x_size])
 
 # TODO: Use these variables to hold your publishers and subscribers
@@ -124,7 +124,8 @@ def init():
     # publisher_odom.publish(pose_init)
 
     #DONE: Set sparki's servo to an angle pointing inward to the map (e.g., 45)
-    publisher_servo.publish(Int16(45))
+    publisher_servo.publish(Int16(80))
+
 
 def callback_update_odometry(data):
     # Receives geometry_msgs/Pose2D message
@@ -132,11 +133,13 @@ def callback_update_odometry(data):
     #DONE: Copy this data into your local odometry variable
     pose2d_sparki_odometry = data
 
+
 def callback_update_state(data):
     global SRV_angle, IR_left, IR_center, IR_right, PING_dist, world_array
     state_dict = json.loads(data.data) # Creates a dictionary object from the JSON string received from the state topic
     #DONE: Load data into your program's local state variables
     SRV_angle = state_dict['servo']
+    SRV_angle = math.radians(SRV_angle)
     IR_FULL = state_dict['light_sensors']
     IR_left = IR_FULL[1]
     IR_center = IR_FULL[2]
@@ -166,6 +169,7 @@ def convert_ultrasonic_to_robot_coords(x_us):
 
     return (x_r, y_r)
 
+
 def convert_robot_coords_to_world(pos_vec):
     global pose2d_sparki_odometry
     #DONE: Using odometry, convert robot-centric coordinates into world coordinates
@@ -186,16 +190,20 @@ def convert_robot_coords_to_world(pos_vec):
 
     return x_w, y_w
 
+
 def convert_ultra_to_world(ultra_dist):
     return convert_robot_coords_to_world(convert_ultrasonic_to_robot_coords(ultra_dist))
+
 
 def world_to_map(x,y):
     x_cm = 100.0*x #Convert to cm for map
     y_cm = 100.0*y
     return int(math.floor(y_cm)), int(math.floor(x_cm))
 
+
 def map_to_world(i,j):
     return (j+0.5)/100.0, (i+0.5)/100.0 #Put in center of map region and convert to meters
+
 
 def populate_map_from_ping(x_ping, y_ping):
     global world_array
@@ -208,8 +216,9 @@ def populate_map_from_ping(x_ping, y_ping):
         world_array[i, j] = 1
     except BaseException as e:
         rospy.loginfo("ERROR: %s", e)
-    
+
     rospy.loginfo("World Check: %d", world_array[i, j])
+
 
 def display_map(x):
     global world_array
@@ -223,9 +232,11 @@ def display_map(x):
     plt.pause(0.0001)
     plt.clf()
 
+
 def ij_to_cell_index(i,j):
     #DONE: Convert from i,j coordinates to a single integer that identifies a grid cell
     return j + i * x_size
+
 
 def cell_index_to_ij(cell_index):
     #DONE: Convert from cell_index to (i,j) coordinates
@@ -242,9 +253,11 @@ def cost(cell_index_from, cell_index_to):
     dest_i, dest_j = cell_index_to_ij(cell_index_to)
     return abs(start_i - dest_i) + abs(start_j - dest_j)
 
+
 def printArr(x):
     global world_array
     print(world_array)
+
 
 if __name__ == "__main__":
     main()
