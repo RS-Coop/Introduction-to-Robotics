@@ -3,7 +3,7 @@ from matplotlib import colors
 import numpy as np
 
 # y_size = 20
-# x_size = 20
+x_size = 20
 # world_array = np.zeros([y_size, x_size])
 # drawn = False
 #
@@ -27,8 +27,8 @@ import numpy as np
 #     plt.pause(0.0001)
 #     plt.clf()
 def main():
-    for i in range(20):
-        print(cell_index_to_ij)
+    for i in range(80):
+        print(cell_index_to_ij(i))
 
 def ij_to_cell_index(i,j):
     #DONE: Convert from i,j coordinates to a single integer that identifies a grid cell
