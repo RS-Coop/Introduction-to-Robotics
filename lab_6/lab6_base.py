@@ -1,4 +1,7 @@
 from collections import deque
+import copy
+import math
+import random
 
 '''
  IMPORTANT: Read through the code before beginning implementation!
@@ -26,7 +29,7 @@ g_src_coordinates = (0,0)
 def create_test_map(map_array):
   # Takes an array representing a map of the world, copies it, and adds simulated obstacles
   num_cells = len(map_array)
-  new_map = copy.copy(map_array)
+  map_matrix = copy.copy(map_array)
   # Add obstacles to up to sqrt(n) vertices of the map
   for i in range(int(math.sqrt(len(map_array)))):
     random_cell = random.randint(0, num_cells)
@@ -160,7 +163,7 @@ def reconstruct_path(prev, source_vertex, dest_vertex):
 
 def render_map(map_array):
     '''
-    TODO-
+    DONE-
     Display the map in the following format:
     Use " . " for free grid cells
     Use "[ ]" for occupied grid cells
@@ -181,11 +184,18 @@ def render_map(map_array):
     Make sure to display your map so that I,J coordinate (0,0) is in the bottom left.
     (To do this, you'll probably want to iterate from row 'J-1' to '0')
     '''
+    for i in range(len(map_array)-1,0,-g_NUM_X_CELLS):
+        for j in range(i-g_NUM_X_CELLS+1, i+1):
+            if map_array[j] == 0:
+                print(' . '),
+            else:
+                print('[ ]'),
 
+        print('\n')
 
 
 def main():
-    global g_WORLD_MAP
+    global g_WORLD_MAP, g_NUM_X_CELLS
     #Just a little test case for the reconstruction
     # test = [1,2,-1,0,-1,-1,3,-1,-1]
     # stack = reconstruct_path(test,2,6)
@@ -193,31 +203,37 @@ def main():
     #     print(stack.pop())
 
     # DONE: Initialize a grid map to use for your test -- you may use create_test_map for this, or manually set one up with obstacles
-    #g_WORLD_MAP = create_test_map()
-    g_WORLD_MAP = [0, 0, 0,
-                    0, 1, 1,
-                    0, 0, 0]
+    g_WORLD_MAP = create_test_map(g_WORLD_MAP)
+    # g_NUM_X_CELLS = 4
+    # g_WORLD_MAP = [0, 0, 1, 0,
+    #                0, 1, 1, 0,
+    #                0, 0, 0, 0,
+    #                0, 0, 0, 0]
+    # g_NUM_X_CELLS = 3
+    # g_WORLD_MAP = [0, 0, 0,
+    #                 0, 1, 1,
+    #                 0, 0, 0]
 
     # Use render_map to render your initialized obstacle map
-    # render_map(g_WORLD_MAP)
+    render_map(g_WORLD_MAP)
 
-    # TODO: Find a path from the (I,J) coordinate pair in g_src_coordinates to the one in g_dest_coordinates using run_dijkstra and reconstruct_path
+    # DONE: Find a path from the (I,J) coordinate pair in g_src_coordinates to the one in g_dest_coordinates using run_dijkstra and reconstruct_path
     prev = run_dijkstra(g_src_coordinates)
     stack = reconstruct_path(prev,g_src_coordinates,g_dest_coordinates)
+
+    '''
+    DONE-
+    Display the final path in the following format:
+    Source: (0,0)
+    Goal: (3,1)
+    0 -> 1 -> 2 -> 6 -> 7
+    '''
 
     print('Source: %s', g_src_coordinates),
     print('Destination: %s', g_dest_coordinates),
     while stack:
         print(stack.pop()),
         print(' -> '),
-
-    '''
-    TODO-
-    Display the final path in the following format:
-    Source: (0,0)
-    Goal: (3,1)
-    0 -> 1 -> 2 -> 6 -> 7
-    '''
 
 
 if __name__ == "__main__":
