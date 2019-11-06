@@ -22,7 +22,7 @@ g_NUM_Y_CELLS = int(g_MAP_SIZE_Y // g_MAP_RESOLUTION_Y) # Number of rows in the 
 g_WORLD_MAP = [0] * g_NUM_Y_CELLS*g_NUM_X_CELLS # Initialize graph (grid) as array
 
 # Source and Destination (I,J) grid coordinates
-g_dest_coordinates = (5,5)
+g_dest_coordinates = (3,3)
 g_src_coordinates = (0,0)
 
 
@@ -32,7 +32,7 @@ def create_test_map(map_array):
   map_matrix = copy.copy(map_array)
   # Add obstacles to up to sqrt(n) vertices of the map
   for i in range(int(math.sqrt(len(map_array)))):
-    random_cell = random.randint(0, num_cells)
+    random_cell = random.randint(0, num_cells-1)
     map_matrix[random_cell] = 1
 
   return map_matrix
@@ -236,6 +236,7 @@ def main():
     while stack:
         print(stack.pop()),
         print(' -> '),
+    print('\n')
 
 
 if __name__ == "__main__":
