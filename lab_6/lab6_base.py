@@ -87,14 +87,15 @@ def get_travel_cost(vertex_source, vertex_dest):
         vertex_dest corresponds to (i,j) coordinates outside the map
         vertex_source and vertex_dest are not adjacent to each other (i.e., more than 1 move away from each other)
   '''
-    start_i, start_j = vertex_index_to_ij(vertex_source)
-    dest_i, dest_j = vertex_index_to_ij(vertex_dest)
-    manDist = abs(start_i - dest_i) + abs(start_j - dest_j)
+    if vertex_source < len(g_WORLD_MAP) and vertex_dest < len(g_WORLD_MAP):
+        start_i, start_j = vertex_index_to_ij(vertex_source)
+        dest_i, dest_j = vertex_index_to_ij(vertex_dest)
+        manDist = abs(start_i - dest_i) + abs(start_j - dest_j)
 
-    if manDist == 1 and g_WORLD_MAP[vertex_source] != 1 and g_WORLD_MAP[vertex_dest] != 1:
-      return 1
-    else:
-      return 100
+        if manDist == 1 and g_WORLD_MAP[vertex_source] != 1 and g_WORLD_MAP[vertex_dest] != 1:
+          return 1
+
+    return 100
 
 
 def run_dijkstra(source_vertex):
