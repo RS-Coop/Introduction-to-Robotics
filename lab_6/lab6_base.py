@@ -1,3 +1,5 @@
+from collections import deque
+
 '''
  IMPORTANT: Read through the code before beginning implementation!
  Your solution should fill in the various "TODO" items within this starter code.
@@ -78,7 +80,7 @@ def xy_coordinates_to_ij_coordinates(x,y):
 def get_travel_cost(vertex_source, vertex_dest):
   # Returns the cost of moving from vertex_source (int) to vertex_dest (int)
   # INSTRUCTIONS:
-  '''
+    '''
       This function should return 1 if:
         vertex_source and vertex_dest are neighbors in a 4-connected grid (i.e., N,E,S,W of each other but not diagonal) and neither is occupied in g_WORLD_MAP (i.e., g_WORLD_MAP isn't 1 for either)
 
@@ -86,14 +88,14 @@ def get_travel_cost(vertex_source, vertex_dest):
         vertex_source corresponds to (i,j) coordinates outside the map
         vertex_dest corresponds to (i,j) coordinates outside the map
         vertex_source and vertex_dest are not adjacent to each other (i.e., more than 1 move away from each other)
-  '''
+    '''
     if vertex_source < len(g_WORLD_MAP) and vertex_dest < len(g_WORLD_MAP):
         start_i, start_j = vertex_index_to_ij(vertex_source)
         dest_i, dest_j = vertex_index_to_ij(vertex_dest)
         manDist = abs(start_i - dest_i) + abs(start_j - dest_j)
 
         if manDist == 1 and g_WORLD_MAP[vertex_source] != 1 and g_WORLD_MAP[vertex_dest] != 1:
-          return 1
+            return 1
 
     return 100
 
@@ -134,19 +136,26 @@ def run_dijkstra(source_vertex):
 
 
 def reconstruct_path(prev, source_vertex, dest_vertex):
-  '''
-  Given a populated 'prev' array, a source vertex_index, and destination vertex_index,
-  allocate and return an integer array populated with the path from source to destination.
-  The first entry of your path should be source_vertex and the last entry should be the dest_vertex.
-  If there is no path between source_vertex and dest_vertex, as indicated by hitting a '-1' on the
-  path from dest to source, return an empty list.
-  '''
-  final_path = []
+    '''
+    Given a populated 'prev' array, a source vertex_index, and destination vertex_index,
+    allocate and return an integer array populated with the path from source to destination.
+    The first entry of your path should be source_vertex and the last entry should be the dest_vertex.
+    If there is no path between source_vertex and dest_vertex, as indicated by hitting a '-1' on the
+    path from dest to source, return an empty list.
+    '''
+    final_path = deque()
+    vertex = dest_vertex
 
-  # TODO: Insert your code here
+    while vertex != source_vertex:
+        if vertex == -1:
+            return []
 
+        final_path.append(vertex)
+        vertex = prev[vertex]
 
-  return final_path
+    final_path.append(source_vertex)
+
+    return final_path
 
 
 def render_map(map_array):
@@ -177,6 +186,11 @@ def render_map(map_array):
 
 def main():
   global g_WORLD_MAP
+  #Just a little test case for the reconstruction
+  # test = [1,2,-1,0,-1,-1,3,-1,-1]
+  # stack = reconstruct_path(test,2,6)
+  # while stack:
+  #     print(stack.pop())
 
   # TODO: Initialize a grid map to use for your test -- you may use create_test_map for this, or manually set one up with obstacles
 
