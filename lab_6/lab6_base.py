@@ -240,8 +240,8 @@ def main():
     0 -> 1 -> 2 -> 6 -> 7
     '''
 
-    print('Source: %s', g_src_coordinates),
-    print('Destination: %s', g_dest_coordinates),
+    print('Source: ', g_src_coordinates),
+    print('Destination: ', g_dest_coordinates),
     while stack:
         print(stack.pop()),
         print(' -> '),
