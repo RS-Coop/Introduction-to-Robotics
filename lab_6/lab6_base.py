@@ -127,12 +127,12 @@ def run_dijkstra(source_vertex):
 
   for i in range(0, _NUM_X_CELLS * g_NUM_Y_CELLS):
     for j in range(0, _NUM_X_CELLS * g_NUM_Y_CELLS):
-      alt = Q_cost[i] + get_travel_cost(vertex_index_to_ij(j)) 
+      alt = Q_cost[i] + get_travel_cost(vertex_index_to_ij(j))
       if(alt < dist[j]):
         Q_cost[j] = alt
         dist[j] = alt
         prev[j] = i
-      
+
   # Return results of algorithm run
   return prev
 
@@ -161,8 +161,8 @@ def reconstruct_path(prev, source_vertex, dest_vertex):
 
 
 def render_map(map_array):
-  '''
-  TODO-
+    '''
+    TODO-
     Display the map in the following format:
     Use " . " for free grid cells
     Use "[ ]" for occupied grid cells
@@ -182,8 +182,8 @@ def render_map(map_array):
 
     Make sure to display your map so that I,J coordinate (0,0) is in the bottom left.
     (To do this, you'll probably want to iterate from row 'J-1' to '0')
-  '''
-  
+    '''
+
 
 
 def main():
@@ -194,11 +194,14 @@ def main():
     # while stack:
     #     print(stack.pop())
 
-    # TODO: Initialize a grid map to use for your test -- you may use create_test_map for this, or manually set one up with obstacles
-    g_WORLD_MAP = create_test_map()
+    # DONE: Initialize a grid map to use for your test -- you may use create_test_map for this, or manually set one up with obstacles
+    #g_WORLD_MAP = create_test_map()
+    g_WORLD_MAP = [0, 0, 0,
+                    0, 1, 1,
+                    0, 0, 0]
 
     # Use render_map to render your initialized obstacle map
-    render_map(g_WORLD_MAP)
+    # render_map(g_WORLD_MAP)
 
     # TODO: Find a path from the (I,J) coordinate pair in g_src_coordinates to the one in g_dest_coordinates using run_dijkstra and reconstruct_path
     prev = run_dijkstra(g_src_coordinates)
