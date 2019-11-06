@@ -10,7 +10,7 @@ g_MAP_SIZE_X = 2. # 2m wide
 g_MAP_SIZE_Y = 1.5 # 1.5m tall
 g_MAP_RESOLUTION_X = 0.5 # Each col represents 50cm
 g_MAP_RESOLUTION_Y = 0.375 # Each row represents 37.5cm
-g_NUM_X_CELLS = int(g_MAP_SIZE_X // g_MAP_RESOLUTION_X) # Number of columns in the grid map 
+g_NUM_X_CELLS = int(g_MAP_SIZE_X // g_MAP_RESOLUTION_X) # Number of columns in the grid map
 g_NUM_Y_CELLS = int(g_MAP_SIZE_Y // g_MAP_RESOLUTION_Y) # Number of rows in the grid map
 
 # Map from Lab 4: values of 0 indicate free space, 1 indicates occupied space
@@ -24,12 +24,12 @@ g_src_coordinates = (0,0)
 def create_test_map(map_array):
   # Takes an array representing a map of the world, copies it, and adds simulated obstacles
   num_cells = len(map_array)
-  new_map = copy.copy(map_array) 
+  new_map = copy.copy(map_array)
   # Add obstacles to up to sqrt(n) vertices of the map
   for i in range(int(math.sqrt(len(map_array)))):
     random_cell = random.randint(0, num_cells)
     map_matrix[random_cell] = 1
-  
+
   return map_matrix
 
 def vertex_index_to_ij(vertex_index):
@@ -87,8 +87,14 @@ def get_travel_cost(vertex_source, vertex_dest):
         vertex_dest corresponds to (i,j) coordinates outside the map
         vertex_source and vertex_dest are not adjacent to each other (i.e., more than 1 move away from each other)
   '''
+    start_i, start_j = vertex_index_to_ij(vertex_source)
+    dest_i, dest_j = vertex_index_to_ij(vertex_dest)
+    manDist = abs(start_i - dest_i) + abs(start_j - dest_j)
 
-  return 100
+    if manDist == 1 and g_WORLD_MAP[vertex_source] != 1 and g_WORLD_MAP[vertex_dest] != 1:
+      return 1
+    else:
+      return 100
 
 
 def run_dijkstra(source_vertex):
@@ -99,9 +105,9 @@ def run_dijkstra(source_vertex):
   Function to return an array of ints corresponding to the 'prev' variable in Dijkstra's algorithm
   The 'prev' array stores the next vertex on the best path back to source_vertex.
   Thus, the returned array prev can be treated as a lookup table:  prev[vertex_index] = next vertex index on the path back to source_vertex
-  '''  
+  '''
   global g_NUM_X_CELLS, g_NUM_Y_CELLS
-  
+
   # Array mapping vertex_index to distance of shortest path from vertex_index to source_vertex.
   dist = [0] * g_NUM_X_CELLS * g_NUM_Y_CELLS
 
@@ -141,17 +147,17 @@ def render_map(map_array):
     Use " . " for free grid cells
     Use "[ ]" for occupied grid cells
 
-    Example: 
+    Example:
     For g_WORLD_MAP = [0, 0, 1, 0,
-                       0, 1, 1, 0, 
-                       0, 0, 0, 0, 
+                       0, 1, 1, 0,
+                       0, 0, 0, 0,
                        0, 0, 0, 0]
     There are obstacles at (I,J) coordinates: [ (2,0), (1,1), (2,1) ]
     The map should render as:
-      .  .  .  . 
-      .  .  .  . 
+      .  .  .  .
+      .  .  .  .
       . [ ][ ] .
-      .  . [ ] . 
+      .  . [ ] .
 
 
     Make sure to display your map so that I,J coordinate (0,0) is in the bottom left.
