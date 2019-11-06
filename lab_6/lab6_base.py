@@ -19,7 +19,7 @@ g_NUM_Y_CELLS = int(g_MAP_SIZE_Y // g_MAP_RESOLUTION_Y) # Number of rows in the 
 g_WORLD_MAP = [0] * g_NUM_Y_CELLS*g_NUM_X_CELLS # Initialize graph (grid) as array
 
 # Source and Destination (I,J) grid coordinates
-g_dest_coordinates = (5,5)
+g_dest_coordinates = (2,2)
 g_src_coordinates = (0,0)
 
 
@@ -40,7 +40,7 @@ def vertex_index_to_ij(vertex_index):
   Returns COL, ROW coordinates in 2D grid
   '''
   global g_NUM_X_CELLS
-  return vertex_index % g_NUM_X_CELLS, vertex_index // g_NUM_X_CELLS
+  return (vertex_index % g_NUM_X_CELLS, vertex_index // g_NUM_X_CELLS)
 
 def ij_to_vertex_index(i,j):
   '''
@@ -111,13 +111,15 @@ def run_dijkstra(source_vertex):
   '''
   global g_NUM_X_CELLS, g_NUM_Y_CELLS
 
-  # Array mapping vertex_index to distance of shortest path from vertex_index to source_vertex.
-  dist = [0] * g_NUM_X_CELLS * g_NUM_Y_CELLS
 
+  source_index = source_vertex
+  # Array mapping vertex_index to distance of shortest path from vertex_index to source_vertex.
+  dist = [999] * g_NUM_X_CELLS * g_NUM_Y_CELLS
+  dist[source_index] = 0
   # Queue for identifying which vertices are up to still be explored:
   # Will contain tuples of (vertex_index, cost), sorted such that the min cost is first to be extracted (explore cheapest/most promising vertices first)
   Q_cost = [999] * g_NUM_X_CELLS * g_NUM_Y_CELLS
-  source_index = ij_to_vertex_index(source_vertex)
+  
   Q_cost[source_index] = 0
 
   # Array of ints for storing the next step (vertex_index) on the shortest path back to source_vertex for each vertex in the graph
@@ -125,14 +127,20 @@ def run_dijkstra(source_vertex):
 
   # Insert your Dijkstra's code here. Don't forget to initialize Q_cost properly!
 
-  for i in range(0, _NUM_X_CELLS * g_NUM_Y_CELLS):
-    for j in range(0, _NUM_X_CELLS * g_NUM_Y_CELLS):
-      alt = Q_cost[i] + get_travel_cost(vertex_index_to_ij(j))
+  for i in range(0, g_NUM_X_CELLS * g_NUM_Y_CELLS):
+    for j in range(0, g_NUM_X_CELLS * g_NUM_Y_CELLS):
+      j_x, j_y = vertex_index_to_ij(j)
+      alt = dist[i] + get_travel_cost(i, j)
+      
       if(alt < dist[j]):
+        print("Q_Cost[i] (%s) + cost (%s) = %s" % (dist[i], get_travel_cost(j_x, j_y), alt))
+        print("Update %s to %s" % (j, alt))
         Q_cost[j] = alt
         dist[j] = alt
         prev[j] = i
 
+  print("Q_Cost:", dist)
+  print("Prevl:", prev)
   # Return results of algorithm run
   return prev
 
@@ -149,6 +157,7 @@ def reconstruct_path(prev, source_vertex, dest_vertex):
     vertex = dest_vertex
 
     while vertex != source_vertex:
+        print(vertex)
         if vertex == -1:
             return []
 
@@ -204,8 +213,8 @@ def main():
     # render_map(g_WORLD_MAP)
 
     # TODO: Find a path from the (I,J) coordinate pair in g_src_coordinates to the one in g_dest_coordinates using run_dijkstra and reconstruct_path
-    prev = run_dijkstra(g_src_coordinates)
-    stack = reconstruct_path(prev,g_src_coordinates,g_dest_coordinates)
+    prev = run_dijkstra(ij_to_vertex_index(g_src_coordinates[0], g_src_coordinates[1]))
+    stack = reconstruct_path(prev,ij_to_vertex_index(g_src_coordinates[0], g_src_coordinates[1]),ij_to_vertex_index(g_dest_coordinates[0], g_dest_coordinates[1]))
 
     print('Source: %s', g_src_coordinates),
     print('Destination: %s', g_dest_coordinates),
