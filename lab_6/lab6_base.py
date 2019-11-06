@@ -173,31 +173,40 @@ def render_map(map_array):
     Make sure to display your map so that I,J coordinate (0,0) is in the bottom left.
     (To do this, you'll probably want to iterate from row 'J-1' to '0')
   '''
-  pass
+  
 
 
 def main():
-  global g_WORLD_MAP
-  #Just a little test case for the reconstruction
-  # test = [1,2,-1,0,-1,-1,3,-1,-1]
-  # stack = reconstruct_path(test,2,6)
-  # while stack:
-  #     print(stack.pop())
+    global g_WORLD_MAP
+    #Just a little test case for the reconstruction
+    # test = [1,2,-1,0,-1,-1,3,-1,-1]
+    # stack = reconstruct_path(test,2,6)
+    # while stack:
+    #     print(stack.pop())
 
-  # TODO: Initialize a grid map to use for your test -- you may use create_test_map for this, or manually set one up with obstacles
+    # TODO: Initialize a grid map to use for your test -- you may use create_test_map for this, or manually set one up with obstacles
+    g_WORLD_MAP = create_test_map()
 
+    # Use render_map to render your initialized obstacle map
+    render_map(g_WORLD_MAP)
 
-  # Use render_map to render your initialized obstacle map
+    # TODO: Find a path from the (I,J) coordinate pair in g_src_coordinates to the one in g_dest_coordinates using run_dijkstra and reconstruct_path
+    prev = run_dijkstra(g_src_coordinates)
+    stack = reconstruct_path(prev,g_src_coordinates,g_dest_coordinates)
 
-  # TODO: Find a path from the (I,J) coordinate pair in g_src_coordinates to the one in g_dest_coordinates using run_dijkstra and reconstruct_path
+    print('Source: %s', g_src_coordinates),
+    print('Destination: %s', g_dest_coordinates),
+    while stack:
+        print(stack.pop()),
+        print(' -> '),
 
-  '''
-  TODO-
+    '''
+    TODO-
     Display the final path in the following format:
     Source: (0,0)
     Goal: (3,1)
     0 -> 1 -> 2 -> 6 -> 7
-  '''
+    '''
 
 
 if __name__ == "__main__":
