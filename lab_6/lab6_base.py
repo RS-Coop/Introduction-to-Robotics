@@ -160,7 +160,7 @@ def reconstruct_path(prev, source_vertex, dest_vertex):
     vertex = dest_vertex
 
     while vertex != source_vertex:
-        print(vertex)
+        # print(vertex)
         if vertex == -1:
             return []
 
