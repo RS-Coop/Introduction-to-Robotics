@@ -136,14 +136,14 @@ def run_dijkstra(source_vertex):
       alt = dist[i] + get_travel_cost(i, j)
 
       if(alt < dist[j]):
-        print("Q_Cost[i] (%s) + cost (%s) = %s" % (dist[i], get_travel_cost(j_x, j_y), alt))
-        print("Update %s to %s" % (j, alt))
+        # print("Q_Cost[i] (%s) + cost (%s) = %s" % (dist[i], get_travel_cost(j_x, j_y), alt))
+        # print("Update %s to %s" % (j, alt))
         Q_cost[j] = alt
         dist[j] = alt
         prev[j] = i
 
-  print("Q_Cost:", dist)
-  print("Prevl:", prev)
+  # print("Q_Cost:", dist)
+  # print("Prevl:", prev)
   # Return results of algorithm run
   return prev
 
@@ -240,8 +240,8 @@ def main():
     0 -> 1 -> 2 -> 6 -> 7
     '''
 
-    print('Source: ', g_src_coordinates),
-    print('Destination: ', g_dest_coordinates),
+    print('Source: ', g_src_coordinates)
+    print('Destination: ', g_dest_coordinates)
     while stack:
         print(stack.pop()),
         print(' -> '),
