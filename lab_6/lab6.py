@@ -25,6 +25,8 @@ g_WORLD_MAP = [0] * g_NUM_Y_CELLS*g_NUM_X_CELLS # Initialize graph (grid) as arr
 g_dest_coordinates = (2,2)
 g_src_coordinates = (0,0)
 
+cost_matrix = []
+
 
 def create_test_map(map_array):
   # Takes an array representing a map of the world, copies it, and adds simulated obstacles
@@ -100,7 +102,7 @@ def get_travel_cost(vertex_source, vertex_dest):
         if manDist == 1 and g_WORLD_MAP[vertex_source] != 1 and g_WORLD_MAP[vertex_dest] != 1:
             return 1
 
-    return 100
+    return 1000
 
 
 def run_dijkstra(source_vertex):
@@ -112,16 +114,16 @@ def run_dijkstra(source_vertex):
   The 'prev' array stores the next vertex on the best path back to source_vertex.
   Thus, the returned array prev can be treated as a lookup table:  prev[vertex_index] = next vertex index on the path back to source_vertex
   '''
-  global g_NUM_X_CELLS, g_NUM_Y_CELLS
+  global g_NUM_X_CELLS, g_NUM_Y_CELLS, cost_matrix
 
 
   source_index = source_vertex
   # Array mapping vertex_index to distance of shortest path from vertex_index to source_vertex.
-  dist = [999] * g_NUM_X_CELLS * g_NUM_Y_CELLS
+  dist = [1000] * g_NUM_X_CELLS * g_NUM_Y_CELLS
   dist[source_index] = 0
   # Queue for identifying which vertices are up to still be explored:
   # Will contain tuples of (vertex_index, cost), sorted such that the min cost is first to be extracted (explore cheapest/most promising vertices first)
-  Q_cost = [999] * g_NUM_X_CELLS * g_NUM_Y_CELLS
+  Q_cost = [1000] * g_NUM_X_CELLS * g_NUM_Y_CELLS
 
   Q_cost[source_index] = 0
 
@@ -145,6 +147,7 @@ def run_dijkstra(source_vertex):
   # print("Q_Cost:", dist)
   # print("Prevl:", prev)
   # Return results of algorithm run
+  cost_matrix = Q_cost
   return prev
 
 
@@ -205,8 +208,9 @@ def render_map(map_array):
         print('\n')
 
 
+
 def main():
-    global g_WORLD_MAP, g_NUM_X_CELLS
+    global g_WORLD_MAP, g_NUM_X_CELLS, cost_matrix
     #Just a little test case for the reconstruction
     # test = [1,2,-1,0,-1,-1,3,-1,-1]
     # stack = reconstruct_path(test,2,6)
@@ -242,10 +246,21 @@ def main():
 
     print('Source: ', g_src_coordinates)
     print('Destination: ', g_dest_coordinates)
-    while stack:
-        print(stack.pop()),
-        print(' -> '),
-    print('\n')
+    if len(stack) > 0:
+        while stack:
+            print(stack.pop()),
+            print(' -> '),
+        print('\n')
+    else:
+        print('There is no path from source to destination.')
+
+    print('\n\n')
+    print('Cost Matrix: ')
+    for i in range(g_NUM_X_CELLS-1,-1,-1):
+        for j in range(g_NUM_Y_CELLS):
+            print(cost_matrix[j + i*g_NUM_X_CELLS]),
+
+        print('\n')
 
 
 if __name__ == "__main__":
