@@ -7,20 +7,30 @@ from sensor_msgs.msg import JointState
 #Currently will only support kinematic related pubs/subs
 class DroneController:
 
-    def __init__(self):
+    def __init__(self, name):
         #Initiate pubs and subs for single drone
         #NOTE: Need to determine if we need specific
         #publisher for land and takeoff.
-        self.pilot_pub = rospy.Publisher('', Twist, queue_size=1)
-        self.camera_pub = rospy.Publisher('', JointState, queue_size=1)
+        self.pilot_pub = rospy.Publisher(name + '/cmd_vel', Twist, queue_size=1)
+        self.camera_pub = rospy.Publisher(name + '/camera_control', JointState, queue_size=1)
 
-        self.odom_sub = rospy.Subscriber('', Odometry, odom_callback)
-        self.camera_sub = rospy.Subscriber('', JointState, camera_callback)
+        self.odom_sub = rospy.Subscriber(name + '/odom', Odometry, odom_callback)
+        self.camera_sub = rospy.Subscriber(name + '/joint_states', JointState, camera_callback)
+
+        sleep(1.0)
+
+        #Calibrate by performing a flat trim
+        print('Calibrating')
+
 
     def odom_callback():
         pass
 
     def camera_callback():
+        pass
+
+    def failsafe():
+        #Stop moving drone and land
         pass
 
 class CentralNode:

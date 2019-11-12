@@ -1,1 +1,4 @@
 <Add any important notes here>
+Apparently we want to run the ROS bebop driver as a nodelet?
+
+Need to figure out exception handling to land drone
