@@ -19,9 +19,6 @@ class DroneController:
 
         sleep(1.0)
 
-        #Calibrate by performing a flat trim
-        print('Calibrating')
-
 
     def odom_callback():
         pass
@@ -29,11 +26,18 @@ class DroneController:
     def camera_callback():
         pass
 
+    def takeoff():
+        #NOTE: Need to preform flat trim here to calibrate
+        pass
+
+    def land():
+        pass
+
     def failsafe():
         #Stop moving drone and land
         pass
 
-class CentralNode:
+class SwarmController:
     drones = [] #List of DroneController objects
 
     def __init__(self):

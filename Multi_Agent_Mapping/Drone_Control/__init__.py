@@ -1,1 +1,1 @@
-from drone_control import CentralNode
+from drone_control import SwarmController

@@ -8,7 +8,7 @@ def main():
 
 #Alternative test function
 def test():
-    CandC = dc.CentralNode()
+    CandC = dc.SwarmController()
 
 if __name__=='__main__':
     test()
